@@ -20,7 +20,7 @@ function concatEmailBody() {
 
   // loop through column C and D for email content
   let bodyPreview = "";
-  bodyPreview += getDefaultGreeting_()[0] + "\n\n"; // add default greeting; later: overwrite with custom greeting
+  bodyPreview += getDefaultGreeting2()[0] + "\n\n"; // add default greeting; later: overwrite with custom greeting
   for(i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
     bodyPreview += header + "\n";
@@ -30,10 +30,8 @@ function concatEmailBody() {
     }
     bodyPreview += content + "\n\n" 
   }  
-  bodyPreview += getDefaultGreeting_()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
+  bodyPreview += getDefaultGreeting2()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
 
-  // get name from email address, add to end of message; may need changing depending on how friendly people want to be
-  bodyPreview += getNameFromEmail();
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
 }
@@ -56,18 +54,38 @@ function getDefaultGreeting_() {
   return [defaultGreeting, defaultClosing]
 }
 
+function getDefaultGreeting2(){
+  let greeting = "";
+  const names = concatToNames();
+  console.log(names[0])
+  console.log(names[1])
+  const myName = getNameFromEmail()
+  console.log(myName)
+  greeting += names[0] + "\n";
+  greeting += names[1] + "\n\n";
+  greeting += "お疲れ様です。" + myName + "です。"
+
+  console.log(greeting)
+
+  let closing = "何卒よろしくお願いいたします。\n\n";
+  closing += myName;
+  return [greeting, closing]
+
+}
 function getNameFromEmail() {
   const sheetName = "logic, pull down";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   const emailNameList = sheet.getRange("H:I").getValues()
   // console.log(emailNameList)
   const myEmail = Session.getActiveUser().getEmail();
-  
+  let myName;
   for(i=0; i < emailNameList.length; i++){
     if(emailNameList[i][0] == myEmail){
       console.log(emailNameList[i][1])
+      myName = emailNameList[i][1]
     }
   }
+  return myName
 }
 
 function concatToNames() {
@@ -85,7 +103,9 @@ function concatToNames() {
       ccNames += names[i][1] + "さん、"
     }
   }
+  ccNames = ccNames.slice(0,-1)
   ccNames += ")";
   console.log("To:", toNames);
   console.log("CC:", ccNames);
+  return [toNames, ccNames]
 }
