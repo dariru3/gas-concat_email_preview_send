@@ -33,7 +33,7 @@ function concatEmailBody() {
   bodyPreview += getDefaultGreeting_()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
 
   // get name from email address, add to end of message; may need changing depending on how friendly people want to be
-  bodyPreview += getNameFromEmail_();
+  bodyPreview += getNameFromEmail();
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
 }
@@ -41,8 +41,8 @@ function concatEmailBody() {
 function getDefaultGreeting_() {
   const sheetName = "logic, pull down"
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const greetingCell = "J2"
-  const closingCell = "J10"
+  const greetingCell = "K2"
+  const closingCell = "K10"
 
   const defaultGreeting = sheet.getRange(greetingCell).getValue();
   const greetingSplit = defaultGreeting.split("\n")
@@ -56,9 +56,36 @@ function getDefaultGreeting_() {
   return [defaultGreeting, defaultClosing]
 }
 
-function getNameFromEmail_() {
+function getNameFromEmail() {
+  const sheetName = "logic, pull down";
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  const emailNameList = sheet.getRange("H:I").getValues()
+  // console.log(emailNameList)
   const myEmail = Session.getActiveUser().getEmail();
-  const nameFromEmail = myEmail.split(".")[0];
-  const capitalizeName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
-  return capitalizeName
+  
+  for(i=0; i < emailNameList.length; i++){
+    if(emailNameList[i][0] == myEmail){
+      console.log(emailNameList[i][1])
+    }
+  }
+}
+
+function concatToNames() {
+  const sheetName = "logic, pull down";
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  const names = sheet.getRange("O2:P6").getValues();
+  console.log(names);
+  let toNames = "";
+  let ccNames = "(";
+  for(i=0; i<names.length; i++){
+    if(names[i][0] != ''){
+      toNames += names[i][0] + "さん、"
+    }
+    if(names[i][1] != '' && names[i][1] != "Editors"){
+      ccNames += names[i][1] + "さん、"
+    }
+  }
+  ccNames += ")";
+  console.log("To:", toNames);
+  console.log("CC:", ccNames);
 }
