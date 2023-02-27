@@ -23,12 +23,13 @@ function concatEmailBody() {
   bodyPreview += getDefaultGreeting2()[0] + "\n\n"; // add default greeting; later: overwrite with custom greeting
   for(i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
-    bodyPreview += header + "\n";
     let content = data[i][contentCol];
-    if(!content) {
-      content = "None"
+    if(content) {
+      if(header != '挨拶（任意）'){
+        bodyPreview += header + "\n";
+      }
+      bodyPreview += content + "\n\n";
     }
-    bodyPreview += content + "\n\n" 
   }  
   bodyPreview += getDefaultGreeting2()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
 
