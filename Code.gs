@@ -10,31 +10,54 @@ function concatEmailBody() {
   // connect to spreadsheet and values
   const sheetName = "Sheet1";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const data = sheet.getDataRange().getValues()
+  const data = sheet.getDataRange().getValues();
   const startRow = 6;
   const headerCol = 2;
   const contentCol = 3;
   const lastContentRow = sheet.getRange("D" + sheet.getMaxRows());
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
+  const projectType = ["新規", "既存", "更新"]
 
   // loop through column C and D for email content
   let bodyPreview = "";
-  bodyPreview += getDefaultGreeting2()[0] + "\n\n"; // add default greeting; later: overwrite with custom greeting
+  bodyPreview += getDefaultGreeting2()[0];
   for(i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
     let content = data[i][contentCol];
     if(content) {
-      if(header != '挨拶（任意）'){
-        bodyPreview += header + "\n";
+      if(content == "-" || content == "ー"){
+        content = "";
       }
-      bodyPreview += content + "\n\n";
+      if(header == '挨拶（任意）'){
+        bodyPreview += "\n\n"+ content;
+      } else if(header instanceof Date || projectType.includes(header)){
+        if(header instanceof Date){
+          header = formatDate(header);
+        }
+        if(projectType.includes(header)){
+          content += "字"
+        }
+        bodyPreview += "\n" + header + " " + content;
+      } else {
+        bodyPreview += "\n\n" + header;
+        bodyPreview += "\n" + content;
+      }
+      
     }
-  }  
-  bodyPreview += getDefaultGreeting2()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
+  }
+  bodyPreview += "\n\n" + getDefaultGreeting2()[1]
 
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
+}
+
+function formatDate(date) {
+  const d = new Date(date);
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const dayShort = new Intl.DateTimeFormat("ja-JP", { weekday: "narrow" }).format(d);
+  return `${month}/${day} (${dayShort})`
 }
 
 function getDefaultGreeting_() {
@@ -74,23 +97,23 @@ function getDefaultGreeting2(){
 
 }
 function getNameFromEmail() {
-  const sheetName = "logic, pull down";
+  const sheetName = "logic";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const emailNameList = sheet.getRange("H:I").getValues()
+  const emailNameList = sheet.getRange("H:J").getValues()
   // console.log(emailNameList)
   const myEmail = Session.getActiveUser().getEmail();
   let myName;
   for(i=0; i < emailNameList.length; i++){
     if(emailNameList[i][0] == myEmail){
-      console.log(emailNameList[i][1])
-      myName = emailNameList[i][1]
+      console.log(emailNameList[i][2])
+      myName = emailNameList[i][2]
     }
   }
   return myName
 }
 
 function concatToNames() {
-  const sheetName = "logic, pull down";
+  const sheetName = "logic";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   const names = sheet.getRange("O2:P6").getValues();
   console.log(names);
