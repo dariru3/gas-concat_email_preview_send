@@ -10,7 +10,7 @@ function concatEmailBody() {
   // connect to spreadsheet and values
   const sheetName = "Sheet1";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const data = sheet.getDataRange().getValues()
+  const data = sheet.getDataRange().getValues();
   const startRow = 6;
   const headerCol = 2;
   const contentCol = 3;
@@ -25,16 +25,28 @@ function concatEmailBody() {
     let header = data[i][headerCol];
     let content = data[i][contentCol];
     if(content) {
-      if(header != '挨拶（任意）'){
+      if(header instanceof Date){
+        header = formatDate(header)
+        bodyPreview += header + " " + content + "\n"
+      } else if(header != '挨拶（任意）'){
         bodyPreview += header + "\n";
+        bodyPreview += content + "\n\n";
+      } else {
+        bodyPreview += content + "\n\n";
       }
-      bodyPreview += content + "\n\n";
     }
-  }  
+  }
   bodyPreview += getDefaultGreeting2()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
 
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
+}
+
+function formatDate(date) {
+  const d = new Date(date);
+  const month = '' + (d.getMonth() + 1);
+  const day = '' + d.getDate();
+  return [month, day].join('/');
 }
 
 function getDefaultGreeting_() {
