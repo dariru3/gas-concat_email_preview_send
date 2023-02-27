@@ -20,20 +20,19 @@ function concatEmailBody() {
 
   // loop through column C and D for email content
   let bodyPreview = "";
-  bodyPreview += getDefaultGreeting_()[0] + "\n\n"; // add default greeting; later: overwrite with custom greeting
+  bodyPreview += getDefaultGreeting2()[0] + "\n\n"; // add default greeting; later: overwrite with custom greeting
   for(i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
-    bodyPreview += header + "\n";
     let content = data[i][contentCol];
-    if(!content) {
-      content = "None"
+    if(content) {
+      if(header != '挨拶（任意）'){
+        bodyPreview += header + "\n";
+      }
+      bodyPreview += content + "\n\n";
     }
-    bodyPreview += content + "\n\n" 
   }  
-  bodyPreview += getDefaultGreeting_()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
+  bodyPreview += getDefaultGreeting2()[1] + "\n\n" // add default closing greeting; later: overwrite with custom closing
 
-  // get name from email address, add to end of message; may need changing depending on how friendly people want to be
-  bodyPreview += getNameFromEmail_();
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
 }
@@ -41,8 +40,8 @@ function concatEmailBody() {
 function getDefaultGreeting_() {
   const sheetName = "logic, pull down"
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const greetingCell = "J2"
-  const closingCell = "J10"
+  const greetingCell = "K2"
+  const closingCell = "K10"
 
   const defaultGreeting = sheet.getRange(greetingCell).getValue();
   const greetingSplit = defaultGreeting.split("\n")
@@ -56,9 +55,58 @@ function getDefaultGreeting_() {
   return [defaultGreeting, defaultClosing]
 }
 
-function getNameFromEmail_() {
+function getDefaultGreeting2(){
+  let greeting = "";
+  const names = concatToNames();
+  console.log(names[0])
+  console.log(names[1])
+  const myName = getNameFromEmail()
+  console.log(myName)
+  greeting += names[0] + "\n";
+  greeting += names[1] + "\n\n";
+  greeting += "お疲れ様です。" + myName + "です。"
+
+  console.log(greeting)
+
+  let closing = "何卒よろしくお願いいたします。\n\n";
+  closing += myName;
+  return [greeting, closing]
+
+}
+function getNameFromEmail() {
+  const sheetName = "logic, pull down";
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  const emailNameList = sheet.getRange("H:I").getValues()
+  // console.log(emailNameList)
   const myEmail = Session.getActiveUser().getEmail();
-  const nameFromEmail = myEmail.split(".")[0];
-  const capitalizeName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
-  return capitalizeName
+  let myName;
+  for(i=0; i < emailNameList.length; i++){
+    if(emailNameList[i][0] == myEmail){
+      console.log(emailNameList[i][1])
+      myName = emailNameList[i][1]
+    }
+  }
+  return myName
+}
+
+function concatToNames() {
+  const sheetName = "logic, pull down";
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  const names = sheet.getRange("O2:P6").getValues();
+  console.log(names);
+  let toNames = "";
+  let ccNames = "(";
+  for(i=0; i<names.length; i++){
+    if(names[i][0] != ''){
+      toNames += names[i][0] + "さん、"
+    }
+    if(names[i][1] != '' && names[i][1] != "Editors"){
+      ccNames += names[i][1] + "さん、"
+    }
+  }
+  ccNames = ccNames.slice(0,-1)
+  ccNames += ")";
+  console.log("To:", toNames);
+  console.log("CC:", ccNames);
+  return [toNames, ccNames]
 }
