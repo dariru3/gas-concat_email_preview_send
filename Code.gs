@@ -27,21 +27,22 @@ function concatEmailBody() {
   for(let i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
     let content = data[i][contentCol];
-
+    // add to email body if there is content
     if(content) {
       if(removeContent.has(content)){
         content = "";
       }
+      // format different headers
       switch(header){
         case removeHeader.has(header):
           bodyPreview += `\n\n${content}`;
           break
-        case header instanceof Date:
-          header = formatDate(header);
-          bodyPreview += `\n${header} ${content}`;
-          break
         case projectType.has(header):
           content += characterCounter;
+          bodyPreview += `\n${header} ${content}`;
+          break
+        case header instanceof Date:
+          header = formatDate(header);
           bodyPreview += `\n${header} ${content}`;
           break
         default:
