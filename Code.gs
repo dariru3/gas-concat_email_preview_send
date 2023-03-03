@@ -11,10 +11,10 @@ function concatEmailBody() {
   const sheetName = "Sheet1";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   const data = sheet.getDataRange().getValues();
-  const startRow = 6;
-  const headerCol = 2;
-  const contentCol = 3;
-  const lastContentRow = sheet.getRange("D" + sheet.getMaxRows());
+  const startRow = 6; // spreadsheet row 7
+  const headerCol = 2; // column C
+  const contentCol = 3; // column D
+  const lastContentRow = sheet.getRange(sheet.getLastRow(), contentCol+1);
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
   const projectType = ["新規", "既存", "更新"]
