@@ -18,19 +18,21 @@ function concatEmailBody() {
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
   const projectType = ["新規", "既存", "更新"]
+  const removeHeader = '挨拶（任意）';
+  const removeContent = ["-", "ー"];
 
   // loop through column C and D for email content
-  let bodyPreview = "";
-  bodyPreview += getDefaultGreeting2()[0];
-  for(i=startRow; i<lastRow; i++){
+  bodyPreview = getDefaultGreeting_()[0];
+  for(let i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
     let content = data[i][contentCol];
+
     if(content) {
-      if(content == "-" || content == "ー"){
+      if(removeContent.includes(content)){
         content = "";
       }
-      if(header == '挨拶（任意）'){
-        bodyPreview += "\n\n"+ content;
+      if(header == removeHeader){
+        bodyPreview += `\n\n${content}`;
       } else if(header instanceof Date || projectType.includes(header)){
         if(header instanceof Date){
           header = formatDate(header);
@@ -38,15 +40,13 @@ function concatEmailBody() {
         if(projectType.includes(header)){
           content += "字"
         }
-        bodyPreview += "\n" + header + " " + content;
+        bodyPreview += `\n${header} ${content}`;
       } else {
-        bodyPreview += "\n\n" + header;
-        bodyPreview += "\n" + content;
+        bodyPreview += `\n\n${header}\n${content}`;
       }
-      
     }
   }
-  bodyPreview += "\n\n" + getDefaultGreeting2()[1]
+  bodyPreview += `\n\n${getDefaultGreeting_()[1]}`;
 
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
@@ -60,25 +60,7 @@ function formatDate(date) {
   return `${month}/${day} (${dayShort})`
 }
 
-function getDefaultGreeting_() {
-  const sheetName = "logic, pull down"
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const greetingCell = "K2"
-  const closingCell = "K10"
-
-  const defaultGreeting = sheet.getRange(greetingCell).getValue();
-  const greetingSplit = defaultGreeting.split("\n")
-  const firstLine = greetingSplit[0];
-  const greetingMain = greetingSplit[2];
-  // console.log(firstLine);
-  // console.log(greetingMain);
-  
-  const defaultClosing = sheet.getRange(closingCell).getValue();
-  
-  return [defaultGreeting, defaultClosing]
-}
-
-function getDefaultGreeting2(){
+function getDefaultGreeting_(){
   let greeting = "";
   const names = concatToNames();
   console.log(names[0])
