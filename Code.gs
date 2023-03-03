@@ -29,7 +29,6 @@ function concatEmailBody() {
   bodyPreview = getDefaultGreeting_()[0];
   for(let i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
-    console.log(header);
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
