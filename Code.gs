@@ -20,10 +20,6 @@ function concatEmailBody() {
   const lastContentRow = sheet.getRange(sheet.getLastRow(), contentCol+1);
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
-  const projectType = new Set(["新規", "既存", "更新"]);
-  const removeHeader = new Set(['挨拶（任意）']);
-  const removeContent = new Set(["-", "ー"]);
-  const characterCounter = "字";
 
   // loop through column C and D for email content
   bodyPreview = getDefaultGreeting_()[0];
@@ -32,27 +28,40 @@ function concatEmailBody() {
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
-      if(removeContent.has(content)){
-        content = "";
-      }
-      // format different headers
-      if(removeHeader.has(header)){
-        bodyPreview += `\n\n${content}`;
-      } else if(projectType.has(header)){
-        content += characterCounter;
-        bodyPreview += `\n${header} ${content}`;
-      } else if(header instanceof Date){
-        header = formatDate_(header);
-        bodyPreview += `\n${header} ${content}`;
-      } else {
-        bodyPreview += `\n\n${header}\n${content}`;
-      }
+      bodyPreview += formatHeaderContent_(header, content);
     }
   }
   bodyPreview += `\n\n${getDefaultGreeting_()[1]}`;
 
   console.log(bodyPreview);
   sheet.getRange(previewCell).setValue(bodyPreview);
+}
+
+
+function formatHeaderContent_(header, content){
+  const removeContent = new Set(["-", "ー"]);
+  const removeHeader = new Set(['挨拶（任意）']);
+  const projectType = new Set(["新規", "既存", "更新"]);
+  const characterCounter = "字";
+
+  let headersContent = "";
+  if(removeContent.has(content)){
+    content = "";
+  }
+  // format headers according to type
+  if(removeHeader.has(header)){
+    headersContent += `\n\n${content}`;
+  } else if(projectType.has(header)){
+    content += characterCounter;
+    headersContent += `\n${header} ${content}`;
+  } else if(header instanceof Date){
+    header = formatDate_(header);
+    headersContent += `\n${header} ${content}`;
+  } else {
+    headersContent += `\n\n${header}\n${content}`;
+  }
+
+  return headersContent
 }
 
 /**
