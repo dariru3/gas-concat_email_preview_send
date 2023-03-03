@@ -6,6 +6,9 @@ function onOpen() {
       .addToUi();
 }
 
+/**
+ * Function to display email preview in spreadsheet.
+ */
 function concatEmailBody() {
   // connect to spreadsheet and values
   const sheetName = "Sheet1";
@@ -40,7 +43,7 @@ function concatEmailBody() {
         content += characterCounter;
         bodyPreview += `\n${header} ${content}`;
       } else if(header instanceof Date){
-        header = formatDate(header);
+        header = formatDate_(header);
         bodyPreview += `\n${header} ${content}`;
       } else {
         bodyPreview += `\n\n${header}\n${content}`;
@@ -53,7 +56,13 @@ function concatEmailBody() {
   sheet.getRange(previewCell).setValue(bodyPreview);
 }
 
-function formatDate(date) {
+/**
+ * Helper function to formate date value
+ * with Japanese text.
+ * @param {date} date Date value. 
+ * @returns Date formatted with Japanese day.
+ */
+function formatDate_(date) {
   const d = new Date(date);
   const month = d.getMonth() + 1;
   const day = d.getDate();
@@ -61,50 +70,46 @@ function formatDate(date) {
   return `${month}/${day} (${dayShort})`
 }
 
+/**
+ * Helper function to compile default
+ * opening and closing greetings.
+ * @returns Opening and closing greetings.
+ */
 function getDefaultGreeting_(){
   let greeting = "";
-  const names = concatToNames();
-  console.log(names[0])
-  console.log(names[1])
-  const myName = getNameFromEmail()
-  console.log(myName)
-  greeting += names[0] + "\n";
-  greeting += names[1] + "\n\n";
-  greeting += "お疲れ様です。" + myName + "です。"
+  const toNames = getNamesFromAddresses_()[0];
+  const ccNames = getNamesFromAddresses_()[1];
+  const myName = getNamesFromAddresses_("Daryl");
+  greeting += `${toNames}\n`;
+  greeting += `${ccNames}\n\n`;
+  greeting += `お疲れ様です。${myName}です。`;
 
-  console.log(greeting)
-
-  let closing = "何卒よろしくお願いいたします。\n\n";
-  closing += myName;
+  const closing = `何卒よろしくお願いいたします。\n\n${myName}`;
   return [greeting, closing]
-
-}
-function getNameFromEmail() {
-  const sheetName = "logic";
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const emailNameList = sheet.getRange("H:J").getValues()
-  // console.log(emailNameList)
-  const myEmail = Session.getActiveUser().getEmail();
-  let myName;
-  for(i=0; i < emailNameList.length; i++){
-    if(emailNameList[i][0] == myEmail){
-      console.log(emailNameList[i][2])
-      myName = emailNameList[i][2]
-    }
-  }
-  return myName
 }
 
-function concatToNames() {
+/**
+ * Helper function to get preferred names from email address.
+ * @param {any} getMyName Optional: add to get user's name.
+ * @returns Either user's name or to and cc names.
+ */
+function getNamesFromAddresses_(getMyName) {
+  // connect to source sheet and reference sheet
   const sourceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   const emailAddresses = sourceSheet.getRange("A3:B11").getValues();
+
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
   const emailNameList = referenceSheet.getRange("H:J").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
 
-  const nameLookup = {};
+  const nameLookup = {}; // dictionary for easier lookup
   emailNameList.forEach(row => nameLookup[row[0]] = row[2]);
-  //console.log(nameLookup);
+
+  if(getMyName){
+    getMyName = Session.getActiveUser().getEmail();
+    return nameLookup[getMyName];
+  }
+
   let toNames = "";
   let ccNames = "(";
   for(let i=0; i<emailAddresses.length; i++){
@@ -117,10 +122,8 @@ function concatToNames() {
       ccNames += `${nameLookup[ccAddress]}さん、`
     }
   }
-  ccNames = ccNames.slice(0,-1);
+  ccNames = ccNames.slice(0,-1); // remove the final comma
   ccNames += ")";
-  console.log(toNames);
-  console.log(ccNames);
 
   return [toNames, ccNames]
 }
