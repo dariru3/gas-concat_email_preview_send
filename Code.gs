@@ -17,9 +17,9 @@ function concatEmailBody() {
   const lastContentRow = sheet.getRange(sheet.getLastRow(), contentCol+1);
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
-  const projectType = ["新規", "既存", "更新"]
-  const removeHeader = '挨拶（任意）';
-  const removeContent = ["-", "ー"];
+  const projectType = new Set(["新規", "既存", "更新"]);
+  const removeHeader = new Set(['挨拶（任意）']);
+  const removeContent = new Set(["-", "ー"]);
   const characterCounter = "字";
 
   // loop through column C and D for email content
@@ -29,18 +29,18 @@ function concatEmailBody() {
     let content = data[i][contentCol];
 
     if(content) {
-      if(removeContent.includes(content)){
+      if(removeContent.has(content)){
         content = "";
       }
       switch(header){
-        case removeHeader:
+        case removeHeader.has(header):
           bodyPreview += `\n\n${content}`;
           break
         case header instanceof Date:
           header = formatDate(header);
           bodyPreview += `\n${header} ${content}`;
           break
-        case projectType.includes(header):
+        case projectType.has(header):
           content += characterCounter;
           bodyPreview += `\n${header} ${content}`;
           break
