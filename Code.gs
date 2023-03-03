@@ -100,12 +100,24 @@ function getNameFromEmail() {
 }
 
 function concatToNames() {
-  const sheetName = "logic";
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const names = sheet.getRange("O2:P6").getValues();
-  console.log(names);
+  const sourceSheetName = "Sheet1";
+  const sourceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sourceSheetName);
+  const emailAddresses = sourceSheet.getRange("A3:B11").getValues();
+  const refSheetName = "logic";
+  const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(refSheetName);
+  const emailNameList = referenceSheet.getRange("H:J").getValues();
+  
   let toNames = "";
-  let ccNames = "(";
+  let ccNames = "";
+  for(i=0; i<emailAddresses.length; i++){
+    for(j=0; j<emailNameList.length; j++){
+      if(emailAddresses[i][0] == emailNameList[j]){
+        print(emailNameList[j][2]);
+      }
+    }
+  }
+
+  /*  
   for(i=0; i<names.length; i++){
     if(names[i][0] != ''){
       toNames += names[i][0] + "さん、"
@@ -115,8 +127,6 @@ function concatToNames() {
     }
   }
   ccNames = ccNames.slice(0,-1)
-  ccNames += ")";
-  console.log("To:", toNames);
-  console.log("CC:", ccNames);
   return [toNames, ccNames]
+  */
 }
