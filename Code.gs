@@ -20,6 +20,7 @@ function concatEmailBody() {
   const projectType = ["新規", "既存", "更新"]
   const removeHeader = '挨拶（任意）';
   const removeContent = ["-", "ー"];
+  const characterCounter = "字";
 
   // loop through column C and D for email content
   bodyPreview = getDefaultGreeting_()[0];
@@ -31,18 +32,21 @@ function concatEmailBody() {
       if(removeContent.includes(content)){
         content = "";
       }
-      if(header == removeHeader){
-        bodyPreview += `\n\n${content}`;
-      } else if(header instanceof Date || projectType.includes(header)){
-        if(header instanceof Date){
+      switch(header){
+        case removeHeader:
+          bodyPreview += `\n\n${content}`;
+          break
+        case header instanceof Date:
           header = formatDate(header);
-        }
-        if(projectType.includes(header)){
-          content += "字"
-        }
-        bodyPreview += `\n${header} ${content}`;
-      } else {
-        bodyPreview += `\n\n${header}\n${content}`;
+          bodyPreview += `\n${header} ${content}`;
+          break
+        case projectType.includes(header):
+          content += characterCounter;
+          bodyPreview += `\n${header} ${content}`;
+          break
+        default:
+          bodyPreview += `\n\n${header}\n${content}`;
+          break
       }
     }
   }
