@@ -26,6 +26,7 @@ function concatEmailBody() {
   bodyPreview = getDefaultGreeting_()[0];
   for(let i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
+    console.log(header);
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
@@ -33,21 +34,16 @@ function concatEmailBody() {
         content = "";
       }
       // format different headers
-      switch(header){
-        case removeHeader.has(header):
-          bodyPreview += `\n\n${content}`;
-          break
-        case projectType.has(header):
-          content += characterCounter;
-          bodyPreview += `\n${header} ${content}`;
-          break
-        case header instanceof Date:
-          header = formatDate(header);
-          bodyPreview += `\n${header} ${content}`;
-          break
-        default:
-          bodyPreview += `\n\n${header}\n${content}`;
-          break
+      if(removeHeader.has(header)){
+        bodyPreview += `\n\n${content}`;
+      } else if(projectType.has(header)){
+        content += characterCounter;
+        bodyPreview += `\n${header} ${content}`;
+      } else if(header instanceof Date){
+        header = formatDate(header);
+        bodyPreview += `\n${header} ${content}`;
+      } else {
+        bodyPreview += `\n\n${header}\n${content}`;
       }
     }
   }
@@ -100,33 +96,31 @@ function getNameFromEmail() {
 }
 
 function concatToNames() {
-  const sourceSheetName = "Sheet1";
-  const sourceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sourceSheetName);
+  const sourceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   const emailAddresses = sourceSheet.getRange("A3:B11").getValues();
-  const refSheetName = "logic";
-  const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(refSheetName);
+  const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
   const emailNameList = referenceSheet.getRange("H:J").getValues();
-  
-  let toNames = "";
-  let ccNames = "";
-  for(i=0; i<emailAddresses.length; i++){
-    for(j=0; j<emailNameList.length; j++){
-      if(emailAddresses[i][0] == emailNameList[j]){
-        print(emailNameList[j][2]);
-      }
-    }
-  }
+  const noNames = new Set(["edit_all@link-cc.co.jp"]);
 
-  /*  
-  for(i=0; i<names.length; i++){
-    if(names[i][0] != ''){
-      toNames += names[i][0] + "さん、"
+  const nameLookup = {};
+  emailNameList.forEach(row => nameLookup[row[0]] = row[2]);
+  //console.log(nameLookup);
+  let toNames = "";
+  let ccNames = "(";
+  for(let i=0; i<emailAddresses.length; i++){
+    let toAddress = emailAddresses[i][0];
+    let ccAddress = emailAddresses[i][1];
+    if(toAddress != "" && toAddress in nameLookup){
+      toNames += `${nameLookup[toAddress]}さん、`
     }
-    if(names[i][1] != '' && names[i][1] != "Editors"){
-      ccNames += names[i][1] + "さん、"
+    if(ccAddress != "" && !noNames.has(ccAddress) && ccAddress in nameLookup){
+      ccNames += `${nameLookup[ccAddress]}さん、`
     }
   }
-  ccNames = ccNames.slice(0,-1)
+  ccNames = ccNames.slice(0,-1);
+  ccNames += ")";
+  console.log(toNames);
+  console.log(ccNames);
+
   return [toNames, ccNames]
-  */
 }
