@@ -7,7 +7,9 @@ function onOpen() {
 }
 
 /**
- * Function to display email preview in spreadsheet.
+ * Function to put together email body
+ * and display preview in spreadsheet.
+ * @returns Email body text.
  */
 function concatEmailBody() {
   // connect to spreadsheet and values
@@ -21,23 +23,31 @@ function concatEmailBody() {
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
 
+  const opening = getDefaultGreeting_()[0];
+  const closing = getDefaultGreeting_()[1];
+  let emailBody = opening
   // loop through column C and D for email content
-  bodyPreview = getDefaultGreeting_()[0];
   for(let i=startRow; i<lastRow; i++){
     let header = data[i][headerCol];
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
-      bodyPreview += formatHeaderContent_(header, content);
+      emailBody += formatHeaderContent_(header, content);
     }
   }
-  bodyPreview += `\n\n${getDefaultGreeting_()[1]}`;
+  emailBody += `\n\n${closing}`;
 
-  console.log(bodyPreview);
-  sheet.getRange(previewCell).setValue(bodyPreview);
+  console.log(emailBody);
+  sheet.getRange(previewCell).setValue(emailBody);
+  return emailBody
 }
 
-
+/**
+ * Helper function to format headers and content.
+ * @param {string} header Header text
+ * @param {string} content Content text
+ * @returns Header and content text formatted.
+ */
 function formatHeaderContent_(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
@@ -84,16 +94,16 @@ function formatDate_(date) {
  * @returns Opening and closing greetings.
  */
 function getDefaultGreeting_(){
-  let greeting = "";
+  let opening = "";
   const toNames = getNamesFromAddresses_()[0];
   const ccNames = getNamesFromAddresses_()[1];
   const myName = getNamesFromAddresses_("Daryl");
-  greeting += `${toNames}\n`;
-  greeting += `${ccNames}\n\n`;
-  greeting += `お疲れ様です。${myName}です。`;
+  opening += `${toNames}\n`;
+  opening += `${ccNames}\n\n`;
+  opening += `お疲れ様です。${myName}です。`;
 
   const closing = `何卒よろしくお願いいたします。\n\n${myName}`;
-  return [greeting, closing]
+  return [opening, closing]
 }
 
 /**
