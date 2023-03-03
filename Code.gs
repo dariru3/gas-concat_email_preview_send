@@ -66,7 +66,7 @@ function getDefaultGreeting_(){
   const names = concatToNames();
   console.log(names[0])
   console.log(names[1])
-  const myName = getNameFromEmail()
+  const myName = concatToNames("Daryl")
   console.log(myName)
   greeting += names[0] + "\n";
   greeting += names[1] + "\n\n";
@@ -95,7 +95,7 @@ function getNameFromEmail() {
   return myName
 }
 
-function concatToNames() {
+function concatToNames(address) {
   const sourceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   const emailAddresses = sourceSheet.getRange("A3:B11").getValues();
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
@@ -104,6 +104,11 @@ function concatToNames() {
 
   const nameLookup = {};
   emailNameList.forEach(row => nameLookup[row[0]] = row[2]);
+
+  if(address){
+    address = Session.getActiveUser().getEmail();
+    return nameLookup[address];
+  }
   //console.log(nameLookup);
   let toNames = "";
   let ccNames = "(";
