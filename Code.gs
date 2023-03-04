@@ -94,9 +94,9 @@ function formatDate_(date) {
  */
 function getDefaultGreeting_(){
   let opening = "";
-  const toNames = getNamesFromAddresses_()[0];
-  const ccNames = getNamesFromAddresses_()[1];
-  const myName = getNamesFromAddresses_("Daryl");
+  const toNames = concatNames_()[0];
+  const ccNames = concatNames_()[1];
+  const myName = concatNames_("Daryl");
   opening += `${toNames}\n`;
   opening += `${ccNames}\n\n`;
   opening += `お疲れ様です。${myName}です。`;
@@ -110,24 +110,24 @@ function getDefaultGreeting_(){
  * @param {any} getMyName Optional: add to get user's name.
  * @returns Either user's name or to and cc names.
  */
-function getNamesFromAddresses_(getMyName) {
+function concatNames_(getMyName) {
   if(getMyName){
     const myEmailAddress = Session.getActiveUser().getEmail();
-    return getNameFromAddress_(myEmailAddress)
+    return getNameFromEmailAddress_(myEmailAddress)
   }
-  const toAddresses = getEmailAddresses_()[0];
-  const ccAddresses = getEmailAddresses_()[1];
+  const toAddresses = getEmailAddress_()[0];
+  const ccAddresses = getEmailAddress_()[1];
 
   let toNames = "";
   let ccNames = "";
 
-  const loopAddressList = (list, names) => {
+  const addSanToNames = (list, concatString) => {
     for(let i=0; i<list.length; i++){
-      names += `${getNameFromAddress_(list[i])}さん、`;
+      concatString += `${getNameFromEmailAddress_(list[i])}さん、`;
     }  
   }
-  loopAddressList(toAddresses, toNames);
-  loopAddressList(ccAddresses, ccNames);
+  addSanToNames(toAddresses, toNames);
+  addSanToNames(ccAddresses, ccNames);
   
   if(ccNames){
     ccNames = ccNames.slice(0,-1); // remove the final comma
@@ -142,7 +142,7 @@ function getNamesFromAddresses_(getMyName) {
  * @param {string} address Email address to look up.
  * @returns Preferred name when sending emails.
  */
-function getNameFromAddress_(address){
+function getNameFromEmailAddress_(address){
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
   const emailNameList = referenceSheet.getRange("H:J").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
@@ -157,10 +157,11 @@ function getNameFromAddress_(address){
   }
 }
 
-function getEmailAddresses_(){
+function getEmailAddress_(){
   // connect to sheet
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
-  const emailAddresses = sheet.getRange("A3:B11").getValues();
+  let emailAddresses = sheet.getRange("A3:B11").getValues();
+  emailAddresses = emailAddresses.filter(a => a);
 
   let toAddresses = [];
   let ccAddresses = [];
