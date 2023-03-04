@@ -111,23 +111,24 @@ function getDefaultGreeting_(){
  * @returns Either user's name or to and cc names.
  */
 function getNamesFromAddresses_(getMyName) {
-  // connect to sheet
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
-  const emailAddresses = sheet.getRange("A3:B11").getValues();
-
   if(getMyName){
-    getMyName = Session.getActiveUser().getEmail();
-    return checkName_(getMyName)
+    const myEmailAddress = Session.getActiveUser().getEmail();
+    return getNameFromAddress_(myEmailAddress)
   }
+  const toAddresses = getEmailAddresses_()[0];
+  const ccAddresses = getEmailAddresses_()[1];
 
   let toNames = "";
   let ccNames = "";
-  for(let i=0; i<emailAddresses.length; i++){
-    let toAddress = emailAddresses[i][0];
-    let ccAddress = emailAddresses[i][1];
-    toNames += `${checkName_(toAddress)}さん、`;
-    ccNames += `${checkName_(ccAddress)}さん、`;
+
+  const loopAddressList = (list, names) => {
+    for(let i=0; i<list.length; i++){
+      names += `${getNameFromAddress_(list[i])}さん、`;
+    }  
   }
+  loopAddressList(toAddresses, toNames);
+  loopAddressList(ccAddresses, ccNames);
+  
   if(ccNames){
     ccNames = ccNames.slice(0,-1); // remove the final comma
     ccNames = `(${ccNames})`;
@@ -141,7 +142,7 @@ function getNamesFromAddresses_(getMyName) {
  * @param {string} address Email address to look up.
  * @returns Preferred name when sending emails.
  */
-function checkName_(address){
+function getNameFromAddress_(address){
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
   const emailNameList = referenceSheet.getRange("H:J").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
@@ -154,4 +155,19 @@ function checkName_(address){
   } else {
     console.error("Email address not found.")
   }
+}
+
+function getEmailAddresses_(){
+  // connect to sheet
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  const emailAddresses = sheet.getRange("A3:B11").getValues();
+
+  let toAddresses = [];
+  let ccAddresses = [];
+  for(let i=0; i<emailAddresses.length; i++){
+    toAddresses.push(emailAddresses[i][0]);
+    ccAddresses.push(emailAddresses[i][1]);
+  }
+
+  return [toAddresses, ccAddresses]
 }
