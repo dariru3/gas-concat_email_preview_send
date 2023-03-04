@@ -2,9 +2,13 @@ function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Email Menu')
       .addItem('Email Preview', 'concatEmailBody')
-      //.addItem('Send Email', '')
+      .addItem('Send Email', 'showEmailAlerts')
       .addToUi();
 }
+
+// global variables
+const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+// end of global variables
 
 /**
  * Function to put together email body
@@ -13,8 +17,7 @@ function onOpen() {
  */
 function concatEmailBody() {
   // connect to spreadsheet and values
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
-  const data = sheet.getDataRange().getValues();
+  const data = SHEET.getDataRange().getValues();
   const startRow = 6; // spreadsheet row 7
   const headerCol = 2; // column C
   const contentCol = 3; // column D
@@ -157,10 +160,13 @@ function getNameFromEmailAddress_(address){
   }
 }
 
+/**
+ * Helper function to gather to and cc email addresses from spreadsheet
+ * @returns Array with two lists: to addresses and cc addresses
+ */
 function getEmailAddress_(){
   // connect to sheet
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
-  let emailAddresses = sheet.getRange("A3:B11").getValues();
+  let emailAddresses = SHEET.getRange("A3:B11").getValues();
   emailAddresses = emailAddresses.filter(a => a);
 
   let toAddresses = [];
@@ -171,4 +177,58 @@ function getEmailAddress_(){
   }
 
   return [toAddresses, ccAddresses]
+}
+
+/**
+ * Function to send email.
+ */
+function sendEmail(){
+  const subject = SHEET.getRange("F3").getValue();
+
+  const body = concatEmailBody();
+  const toAddresses = getEmailAddress_()[0].join();
+  const ccAddresses = getEmailAddress_()[1].join();
+  const options = {
+    cc: ccAddresses
+  }
+
+  try {
+    GmailApp.sendEmail(toAddresses, subject, body, options)
+    console.log("Success: email sent");
+  }
+  catch(e){
+    console.log("Error:", e);
+  }
+}
+
+/**
+ * Show pop-up window to confirm 
+ * Box share settings then
+ * confirm sending email.
+ */
+function showEmailAlerts() {
+  const ui = SpreadsheetApp.getUi();
+
+  const boxAlert = ui.alert(
+     'Is the Box link shared?',
+     'Can everyone in this email access the Box folder?',
+      ui.ButtonSet.YES_NO);
+
+  // Process the user's response.
+  if (boxAlert == ui.Button.YES) {
+    // User clicked "Yes".
+    const emailAlert = ui.alert(
+      'Send email?',
+      ui.ButtonSet.YES_NO);
+    if (emailAlert == ui.Button.YES) {
+      ui.alert('Sending email...')
+      sendEmail();
+    }
+    else {
+      ui.alert('Email cancelled.')
+    }
+  } else {
+    // User clicked "No" or X in the title bar.
+    ui.alert('Please check Box folder settings.');
+  }
 }
