@@ -195,19 +195,22 @@ function sendEmail(){
   try {
     GmailApp.sendEmail(toAddresses, subject, body, options)
     console.log("Success: email sent");
+    showEmailAlerts("confirm");
   }
   catch(e){
-    console.log("Error:", e);
+    throw e
   }
 }
 
-/**
- * Show pop-up window to confirm 
- * Box share settings then
- * confirm sending email.
- */
-function showEmailAlerts() {
+function showEmailAlerts(confirm) {
   const ui = SpreadsheetApp.getUi();
+  
+  if(confirm){
+    ui.alert(
+      "Email sent.",
+      ui.ButtonSet.OK);
+    return
+  }
 
   const boxAlert = ui.alert(
      'Is the Box link shared?',
