@@ -225,9 +225,8 @@ function showEmailAlerts(confirm) {
       ui.ButtonSet.YES_NO);
     if (emailAlert == ui.Button.YES) {
       ui.alert('Sending email...')
-      sendEmail();
-    }
-    else {
+      // sendEmail();
+    } else {
       ui.alert('Email cancelled.')
     }
   } else {
