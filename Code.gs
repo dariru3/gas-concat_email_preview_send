@@ -2,7 +2,7 @@ function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Email Menu')
       .addItem('Email Preview', 'concatEmailBody')
-      .addItem('Send Email', 'showEmailAlerts')
+      .addItem('Send Email', 'showEmailAlerts_')
       .addToUi();
 }
 
@@ -25,8 +25,8 @@ function concatEmailBody() {
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
 
-  const openingGreeting = getDefaultGreeting_()[0];
-  const closingGreeting = getDefaultGreeting_()[1];
+  const openingGreeting = getDefaultGreeting()[0];
+  const closingGreeting = getDefaultGreeting()[1];
   let emailBody = openingGreeting
   // loop through column C and D for email content
   for(let i=startRow; i<lastRow; i++){
@@ -34,13 +34,13 @@ function concatEmailBody() {
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
-      emailBody += formatHeaderContent_(header, content);
+      emailBody += formatHeaderContent(header, content);
     }
   }
   emailBody += `\n\n${closingGreeting}`;
 
-  console.log(emailBody);
-  sheet.getRange(previewCell).setValue(emailBody);
+  console.log("Email body:", emailBody);
+  SHEET.getRange(previewCell).setValue(emailBody);
   return emailBody
 }
 
@@ -50,7 +50,7 @@ function concatEmailBody() {
  * @param {string} content Content text
  * @returns Header and content text formatted.
  */
-function formatHeaderContent_(header, content){
+function formatHeaderContent(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
   const projectType = new Set(["新規", "既存", "更新"]);
@@ -72,7 +72,7 @@ function formatHeaderContent_(header, content){
   } else {
     headersContent += `\n\n${header}\n${content}`;
   }
-
+  console.log("Headers and content:", headersContent);
   return headersContent
 }
 
@@ -95,16 +95,17 @@ function formatDate_(date) {
  * opening and closing greetings.
  * @returns Opening and closing greetings.
  */
-function getDefaultGreeting_(){
+function getDefaultGreeting(){
   let opening = "";
-  const toNames = concatNames_()[0];
-  const ccNames = concatNames_()[1];
-  const myName = concatNames_("Daryl");
+  const toNames = concatNames()[0];
+  const ccNames = concatNames()[1];
+  const myName = concatNames("Daryl");
   opening += `${toNames}\n`;
   opening += `${ccNames}\n\n`;
   opening += `お疲れ様です。${myName}です。`;
 
   const closing = `何卒よろしくお願いいたします。\n\n${myName}`;
+  console.log("Greetings:", opening, closing);
   return [opening, closing]
 }
 
@@ -113,20 +114,21 @@ function getDefaultGreeting_(){
  * @param {any} getMyName Optional: add to get user's name.
  * @returns Either user's name or to and cc names.
  */
-function concatNames_(getMyName) {
+function concatNames(getMyName) {
   if(getMyName){
     const myEmailAddress = Session.getActiveUser().getEmail();
-    return getNameFromEmailAddress_(myEmailAddress)
+    console.log("My name:", getNameFromEmailAddress(myEmailAddress));
+    return getNameFromEmailAddress(myEmailAddress)
   }
-  const toAddresses = getEmailAddress_()[0];
-  const ccAddresses = getEmailAddress_()[1];
+  const toAddresses = getEmailAddress()[0];
+  const ccAddresses = getEmailAddress()[1];
 
   let toNames = "";
   let ccNames = "";
 
   const addSanToNames = (list, concatString) => {
     for(let i=0; i<list.length; i++){
-      concatString += `${getNameFromEmailAddress_(list[i])}さん、`;
+      concatString += `${getNameFromEmailAddress(list[i])}さん、`;
     }  
   }
   addSanToNames(toAddresses, toNames);
@@ -136,7 +138,7 @@ function concatNames_(getMyName) {
     ccNames = ccNames.slice(0,-1); // remove the final comma
     ccNames = `(${ccNames})`;
   }
-
+  console.log("All names:", toNames, ccNames);
   return [toNames, ccNames]
 }
 
@@ -145,7 +147,7 @@ function concatNames_(getMyName) {
  * @param {string} address Email address to look up.
  * @returns Preferred name when sending emails.
  */
-function getNameFromEmailAddress_(address){
+function getNameFromEmailAddress(address){
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
   const emailNameList = referenceSheet.getRange("H:J").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
@@ -154,9 +156,10 @@ function getNameFromEmailAddress_(address){
   emailNameList.forEach(row => nameLookup[row[0]] = row[2]);
 
   if(address != "" && !noNames.has(address) && address in nameLookup){
+    console.log("Name:", nameLookup[address]);
     return nameLookup[address]
   } else {
-    console.error("Email address not found.")
+    console.error("Email address not found.");
   }
 }
 
@@ -164,7 +167,7 @@ function getNameFromEmailAddress_(address){
  * Helper function to gather to and cc email addresses from spreadsheet
  * @returns Array with two lists: to addresses and cc addresses
  */
-function getEmailAddress_(){
+function getEmailAddress(){
   // connect to sheet
   let emailAddresses = SHEET.getRange("A3:B11").getValues();
   emailAddresses = emailAddresses.filter(a => a);
@@ -175,7 +178,7 @@ function getEmailAddress_(){
     toAddresses.push(emailAddresses[i][0]);
     ccAddresses.push(emailAddresses[i][1]);
   }
-
+  console.log("Get email addresses", toAddresses, ccAddresses);
   return [toAddresses, ccAddresses]
 }
 
@@ -186,23 +189,24 @@ function sendEmail(){
   const subject = SHEET.getRange("F3").getValue();
 
   const body = concatEmailBody();
-  const toAddresses = getEmailAddress_()[0].join();
-  const ccAddresses = getEmailAddress_()[1].join();
+  const toAddresses = getEmailAddress()[0].join();
+  const ccAddresses = getEmailAddress()[1].join();
+  console.log("Send emails to:", toAddresses, ccAddresses);
   const options = {
     cc: ccAddresses
   }
 
   try {
-    GmailApp.sendEmail(toAddresses, subject, body, options)
+    // GmailApp.sendEmail(toAddresses, subject, body, options)
     console.log("Success: email sent");
-    showEmailAlerts("confirm");
+    showEmailAlerts_("confirm");
   }
   catch(e){
-    throw e
+    throw "Email error:", e
   }
 }
 
-function showEmailAlerts(confirm) {
+function showEmailAlerts_(confirm) {
   const ui = SpreadsheetApp.getUi();
   
   if(confirm){
@@ -219,18 +223,18 @@ function showEmailAlerts(confirm) {
 
   // Process the user's response.
   if (boxAlert == ui.Button.YES) {
-    // User clicked "Yes".
     const emailAlert = ui.alert(
       'Send email?',
       ui.ButtonSet.YES_NO);
     if (emailAlert == ui.Button.YES) {
-      ui.alert('Sending email...')
+      ui.alert('Sending email...');
       // sendEmail();
     } else {
-      ui.alert('Email cancelled.')
+      ui.alert('Email cancelled.');
+      console.alert("Email cancellled");
     }
   } else {
-    // User clicked "No" or X in the title bar.
     ui.alert('Please check Box folder settings.');
+    console.alert("Cancelled at Box alert.");
   }
 }
