@@ -25,8 +25,8 @@ function concatEmailBody() {
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
 
-  const openingGreeting = getDefaultGreeting()[0];
-  const closingGreeting = getDefaultGreeting()[1];
+  const openingGreeting = getDefaultGreeting_()[0];
+  const closingGreeting = getDefaultGreeting_()[1];
   let emailBody = openingGreeting
   // loop through column C and D for email content
   for(let i=startRow; i<lastRow; i++){
@@ -34,7 +34,7 @@ function concatEmailBody() {
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
-      emailBody += formatHeaderContent(header, content);
+      emailBody += formatHeaderContent_(header, content);
     }
   }
   emailBody += `\n\n${closingGreeting}`;
@@ -50,7 +50,7 @@ function concatEmailBody() {
  * @param {string} content Content text
  * @returns Header and content text formatted.
  */
-function formatHeaderContent(header, content){
+function formatHeaderContent_(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
   const projectType = new Set(["新規", "既存", "更新"]);
@@ -95,11 +95,11 @@ function formatDate_(date) {
  * opening and closing greetings.
  * @returns Opening and closing greetings.
  */
-function getDefaultGreeting(){
+function getDefaultGreeting_(){
   let opening = "";
-  const toNames = concatNames()[0];
-  const ccNames = concatNames()[1];
-  const myName = concatNames("Daryl");
+  const toNames = concatNames_()[0];
+  const ccNames = concatNames_()[1];
+  const myName = concatNames_("Daryl");
   opening += `${toNames}\n`;
   opening += `${ccNames}\n\n`;
   opening += `お疲れ様です。${myName}です。`;
@@ -114,14 +114,14 @@ function getDefaultGreeting(){
  * @param {any} getMyName Optional: add to get user's name.
  * @returns Either user's name or to and cc names.
  */
-function concatNames(getMyName) {
+function concatNames_(getMyName) {
   if(getMyName){
     const myEmailAddress = Session.getActiveUser().getEmail();
-    console.log("My name:", getNameFromEmailAddress(myEmailAddress));
-    return getNameFromEmailAddress(myEmailAddress)
+    console.log("My name:", getNameFromEmailAddress_(myEmailAddress));
+    return getNameFromEmailAddress_(myEmailAddress)
   }
-  const toAddresses = getEmailAddress()[0];
-  const ccAddresses = getEmailAddress()[1];
+  const toAddresses = getEmailAddress_()[0];
+  const ccAddresses = getEmailAddress_()[1];
 
   let toNames = "";
   let ccNames = "";
@@ -129,7 +129,7 @@ function concatNames(getMyName) {
   const addSanToNames = (list) => {
     let concatString = ""
     for(let i=0; i<list.length; i++){
-      const preferredName = getNameFromEmailAddress(list[i])
+      const preferredName = getNameFromEmailAddress_(list[i])
       if(preferredName){
         concatString += `${preferredName}さん、`;
       }
@@ -152,7 +152,7 @@ function concatNames(getMyName) {
  * @param {string} address Email address to look up.
  * @returns Preferred name when sending emails.
  */
-function getNameFromEmailAddress(address){
+function getNameFromEmailAddress_(address){
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
   const emailNameList = referenceSheet.getRange("H:J").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
@@ -172,10 +172,9 @@ function getNameFromEmailAddress(address){
  * Helper function to gather to and cc email addresses from spreadsheet
  * @returns Array with two lists: to addresses and cc addresses
  */
-function getEmailAddress(){
+function getEmailAddress_(){
   // connect to sheet
   let emailAddresses = SHEET.getRange("A3:B11").getValues();
-
 
   let toAddresses = [];
   let ccAddresses = [];
@@ -185,6 +184,7 @@ function getEmailAddress(){
   }
   toAddresses = toAddresses.filter(a => a);
   ccAddresses = ccAddresses.filter(b => b);
+
   console.log("Get email addresses", toAddresses, ccAddresses);
   return [toAddresses, ccAddresses]
 }
@@ -192,12 +192,12 @@ function getEmailAddress(){
 /**
  * Function to send email.
  */
-function sendEmail(){
+function sendEmail_(){
   const subject = SHEET.getRange("F3").getValue();
 
   const body = concatEmailBody();
-  const toAddresses = getEmailAddress()[0].join();
-  const ccAddresses = getEmailAddress()[1].join();
+  const toAddresses = getEmailAddress_()[0].join();
+  const ccAddresses = getEmailAddress_()[1].join();
   console.log("Send emails to:", toAddresses, ccAddresses);
   const options = {
     cc: ccAddresses
