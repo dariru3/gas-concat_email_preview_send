@@ -21,7 +21,7 @@ function concatEmailBody() {
   const startRow = 6; // spreadsheet row 7
   const headerCol = 2; // column C
   const contentCol = 3; // column D
-  const lastContentRow = sheet.getRange(sheet.getLastRow(), contentCol+1);
+  const lastContentRow = SHEET.getRange(SHEET.getLastRow(), contentCol+1);
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
 
@@ -126,13 +126,18 @@ function concatNames(getMyName) {
   let toNames = "";
   let ccNames = "";
 
-  const addSanToNames = (list, concatString) => {
+  const addSanToNames = (list) => {
+    let concatString = ""
     for(let i=0; i<list.length; i++){
-      concatString += `${getNameFromEmailAddress(list[i])}さん、`;
-    }  
+      const preferredName = getNameFromEmailAddress(list[i])
+      if(preferredName){
+        concatString += `${preferredName}さん、`;
+      }
+    }
+    return concatString
   }
-  addSanToNames(toAddresses, toNames);
-  addSanToNames(ccAddresses, ccNames);
+  toNames = addSanToNames(toAddresses);
+  ccNames = addSanToNames(ccAddresses);
   
   if(ccNames){
     ccNames = ccNames.slice(0,-1); // remove the final comma
@@ -170,7 +175,7 @@ function getNameFromEmailAddress(address){
 function getEmailAddress(){
   // connect to sheet
   let emailAddresses = SHEET.getRange("A3:B11").getValues();
-  emailAddresses = emailAddresses.filter(a => a);
+
 
   let toAddresses = [];
   let ccAddresses = [];
@@ -178,6 +183,8 @@ function getEmailAddress(){
     toAddresses.push(emailAddresses[i][0]);
     ccAddresses.push(emailAddresses[i][1]);
   }
+  toAddresses = toAddresses.filter(a => a);
+  ccAddresses = ccAddresses.filter(b => b);
   console.log("Get email addresses", toAddresses, ccAddresses);
   return [toAddresses, ccAddresses]
 }
@@ -231,10 +238,10 @@ function showEmailAlerts_(confirm) {
       // sendEmail();
     } else {
       ui.alert('Email cancelled.');
-      console.alert("Email cancellled");
+      console.warn("Email cancellled");
     }
   } else {
     ui.alert('Please check Box folder settings.');
-    console.alert("Cancelled at Box alert.");
+    console.warn("Cancelled at Box alert.");
   }
 }
