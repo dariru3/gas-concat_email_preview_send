@@ -25,8 +25,8 @@ function concatEmailBody() {
   const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
   const previewCell = "G3"
 
-  const openingGreeting = getDefaultGreeting_()[0];
-  const closingGreeting = getDefaultGreeting_()[1];
+  const openingGreeting = getDefaultGreeting_().openingGreeting;
+  const closingGreeting = getDefaultGreeting_().closingGreeting;
   let emailBody = openingGreeting
   // loop through column C and D for email content
   for(let i=startRow; i<lastRow; i++){
@@ -96,17 +96,18 @@ function formatDate_(date) {
  * @returns Opening and closing greetings.
  */
 function getDefaultGreeting_(){
-  let opening = "";
-  const toNames = concatNames_()[0];
-  const ccNames = concatNames_()[1];
   const myName = concatNames_("Daryl");
-  opening += `${toNames}\n`;
-  opening += `${ccNames}\n\n`;
-  opening += `お疲れ様です。${myName}です。`;
+  let opening = concatNames_().toNames;
+  let ccNames = concatNames_().ccNames;
+  if(ccNames){
+    ccNames = ccNames.slice(0,-1); // remove the final comma
+    opening += `\n(${ccNames})`;
+  }
+  opening += `\n\nお疲れ様です。${myName}です。`;
 
   const closing = `何卒よろしくお願いいたします。\n\n${myName}`;
   console.log("Greetings:", opening, closing);
-  return [opening, closing]
+  return { openingGreeting: opening, closingGreeting: closing }
 }
 
 /**
@@ -120,31 +121,31 @@ function concatNames_(getMyName) {
     console.log("My name:", getNameFromEmailAddress_(myEmailAddress));
     return getNameFromEmailAddress_(myEmailAddress)
   }
-  const toAddresses = getEmailAddress_()[0];
-  const ccAddresses = getEmailAddress_()[1];
 
-  let toNames = "";
-  let ccNames = "";
+  const toAddresses = getEmailAddress_().toAddresses;
+  const ccAddresses = getEmailAddress_().ccAddresses;
 
-  const addSanToNames = (list) => {
-    let concatString = ""
-    for(let i=0; i<list.length; i++){
-      const preferredName = getNameFromEmailAddress_(list[i])
-      if(preferredName){
-        concatString += `${preferredName}さん、`;
-      }
-    }
-    return concatString
-  }
-  toNames = addSanToNames(toAddresses);
-  ccNames = addSanToNames(ccAddresses);
+  const toNames = addSanToNames_(toAddresses);
+  const ccNames = addSanToNames_(ccAddresses);
   
-  if(ccNames){
-    ccNames = ccNames.slice(0,-1); // remove the final comma
-    ccNames = `(${ccNames})`;
-  }
   console.log("All names:", toNames, ccNames);
-  return [toNames, ccNames]
+  return { toNames: toNames,ccNames: ccNames }
+}
+
+/**
+ * Helper function to add -さん after every name.
+ * @param {list} list List of names. 
+ * @returns String of names.
+ */
+function addSanToNames_(list){
+  let concatString = ""
+  for(let i=0; i<list.length; i++){
+    const preferredName = getNameFromEmailAddress_(list[i])
+    if(preferredName){
+      concatString += `${preferredName}さん、`;
+    }
+  }
+  return concatString
 }
 
 /**
@@ -186,7 +187,7 @@ function getEmailAddress_(){
   ccAddresses = ccAddresses.filter(b => b);
 
   console.log("Get email addresses", toAddresses, ccAddresses);
-  return [toAddresses, ccAddresses]
+  return { toAddresses: toAddresses, ccAddresses: ccAddresses }
 }
 
 /**
@@ -196,8 +197,8 @@ function sendEmail_(){
   const subject = SHEET.getRange("F3").getValue();
 
   const body = concatEmailBody();
-  const toAddresses = getEmailAddress_()[0].join();
-  const ccAddresses = getEmailAddress_()[1].join();
+  const toAddresses = getEmailAddress_().toAddresses.join();
+  const ccAddresses = getEmailAddress_().ccAddresses.join();
   console.log("Send emails to:", toAddresses, ccAddresses);
   const options = {
     cc: ccAddresses
@@ -228,14 +229,13 @@ function showEmailAlerts_(confirm) {
      'Can everyone in this email access the Box folder?',
       ui.ButtonSet.YES_NO);
 
-  // Process the user's response.
   if (boxAlert == ui.Button.YES) {
     const emailAlert = ui.alert(
       'Send email?',
       ui.ButtonSet.YES_NO);
     if (emailAlert == ui.Button.YES) {
       ui.alert('Sending email...');
-      // sendEmail();
+      sendEmail_();
     } else {
       ui.alert('Email cancelled.');
       console.warn("Email cancellled");
