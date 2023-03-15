@@ -3,8 +3,7 @@ const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
 // end of global variables
 
 /**
- * Function to put together email body
- * and display preview in spreadsheet.
+ * Function to put together email body and display preview in spreadsheet.
  * @returns Email body text.
  */
 function concatEmailBody() {

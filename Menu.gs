@@ -8,13 +8,6 @@ function onOpen() {
 
 function showEmailAlerts_(confirm) {
   const ui = SpreadsheetApp.getUi();
-  
-  if(confirm){
-    ui.alert(
-      "Email sent.",
-      ui.ButtonSet.OK);
-    return
-  }
 
   const boxAlert = ui.alert(
      'Is the Box link shared?',

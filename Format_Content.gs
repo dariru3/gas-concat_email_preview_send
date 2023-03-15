@@ -31,10 +31,9 @@ function formatHeaderContent_(header, content){
 }
 
 /**
- * Helper function to formate date value
- * with Japanese text.
+ * Helper function to format date value into Japanese text.
  * @param {date} date Date value. 
- * @returns Date formatted with Japanese day.
+ * @returns Date formatted.
  */
 function formatDate_(date) {
   const d = new Date(date);
