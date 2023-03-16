@@ -1,8 +1,8 @@
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('Email Menu')
-      .addItem('Email Preview', 'concatEmailBody')
-      .addItem('Send Email', 'showEmailAlerts_')
+  ui.createMenu('GASメールメニュー')
+      .addItem('メールプレビュー', 'concatEmailBody')
+      .addItem('メール送信', 'showEmailAlerts_')
       .addToUi();
 }
 
