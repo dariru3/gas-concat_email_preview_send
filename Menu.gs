@@ -1,12 +1,12 @@
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('GASメールメニュー')
+  ui.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
       .addItem('メール送信', 'showEmailAlerts_')
       .addToUi();
 }
 
-function showEmailAlerts_(confirm) {
+function showEmailAlerts_() {
   const ui = SpreadsheetApp.getUi();
 
   const boxAlert = ui.alert(
