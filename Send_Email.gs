@@ -2,8 +2,8 @@
  * Function to send email.
  */
 function sendEmail_(){
-  const subject = concatEmailSubject();
-  const body = concatEmailBody();
+  const subject = SHEET.getRange("G2").getValue();
+  const body = SHEET.getRange("G3").getValue();
   const toAddresses = getEmailAddress_().toAddresses.join();
   const ccAddresses = getEmailAddress_().ccAddresses.join();
   console.log("Send emails to:", toAddresses, ccAddresses);

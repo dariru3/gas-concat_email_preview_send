@@ -33,7 +33,6 @@ function concatEmailBody() {
 
   console.log("Email body:", emailBody);
   SHEET.getRange(previewCell).setValue(emailBody);
-  return emailBody
 }
 
 function concatEmailSubject() {
@@ -43,5 +42,4 @@ function concatEmailSubject() {
   const subjectLine = `【${n9}】 ${d4} ${m4}字 ${c6} ${formattedDate}`;
   console.log(subjectLine);
   SHEET.getRange(previewSubjectCell).setValue(subjectLine);
-  return subjectLine
 }
