@@ -16,15 +16,15 @@ function formatHeaderContent_(header, content){
   }
   // format headers according to type
   if(removeHeader.has(header)){
-    headersContent += `\n\n${content}`; // add content without header
+    headersContent += `\n\n${content}`;
   } else if(projectType.has(header)){
     content += characterCounter;
-    headersContent += `\n${header} ${content}`; // put header and content+"字" side-by-side
+    headersContent += `\n${header} ${content}`;
   } else if(header instanceof Date){
     header = formatDate_(header);
-    headersContent += `\n${header} ${content}`; // put header(date) and content side-by-side
+    headersContent += `\n${header} ${content}`;
   } else {
-    headersContent += `\n\n${header}\n${content}`; // add header, underneath add content
+    headersContent += `\n\n${header}\n${content}`;
   }
   console.log("Headers and content:", headersContent);
   return headersContent

@@ -14,7 +14,7 @@ function sendEmail_(){
   try {
     GmailApp.sendEmail(toAddresses, subject, body, options)
     console.log("Success: email sent");
-    SpreadsheetApp.getActiveSpreadsheet().toast('メールが送信されました');
+    emailStatusToast_("sent");
   }
   catch(e){
     throw "Email error:", e
