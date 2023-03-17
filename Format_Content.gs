@@ -16,15 +16,15 @@ function formatHeaderContent_(header, content){
   }
   // format headers according to type
   if(removeHeader.has(header)){
-    headersContent += `\n\n${content}`;
+    headersContent += `\n\n${content}`; // add content without header
   } else if(projectType.has(header)){
     content += characterCounter;
-    headersContent += `\n${header} ${content}`;
+    headersContent += `\n${header} ${content}`; // put header and content+"字" side-by-side
   } else if(header instanceof Date){
     header = formatDate_(header);
-    headersContent += `\n${header} ${content}`;
+    headersContent += `\n${header} ${content}`; // put header(date) and content side-by-side
   } else {
-    headersContent += `\n\n${header}\n${content}`;
+    headersContent += `\n\n${header}\n${content}`; // add header, underneath add content
   }
   console.log("Headers and content:", headersContent);
   return headersContent

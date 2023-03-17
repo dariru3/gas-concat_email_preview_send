@@ -4,7 +4,6 @@ const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("テンプレ
 
 /**
  * Function to put together email body and display preview in spreadsheet.
- * @returns Email body text.
  */
 function concatEmailBody() {
   concatEmailSubject();
@@ -14,7 +13,7 @@ function concatEmailBody() {
   const headerCol = 2; // column C
   const contentCol = 3; // column D
   const lastRow = SHEET.getLastRow();
-  const previewCell = "G3"
+  const previewBodyCell = "G3"
 
   const openingGreeting = getDefaultGreeting_().openingGreeting;
   const closingGreeting = getDefaultGreeting_().closingGreeting;
@@ -31,9 +30,12 @@ function concatEmailBody() {
   emailBody += `\n\n${closingGreeting}`;
 
   console.log("Email body:", emailBody);
-  SHEET.getRange(previewCell).setValue(emailBody);
+  SHEET.getRange(previewBodyCell).setValue(emailBody);
 }
 
+/**
+ * Function to put together email subject line and display preview in spreadsheet.
+ */
 function concatEmailSubject() {
   const previewSubjectCell = "G2";
   const [m2, d4, m4, c6, d6] = SHEET.getRangeList(['M2','D4','M4','C6','D6']).getRanges().map(range => range.getValues().flat())
