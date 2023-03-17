@@ -4,8 +4,8 @@
  * @returns Preferred name when sending emails.
  */
 function getNameFromEmailAddress_(address){
-  const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("logic");
-  const emailNameList = referenceSheet.getRange("H:J").getValues();
+  const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("メールリスト");
+  const emailNameList = referenceSheet.getRange("A:C").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
 
   const nameLookup = {}; // dictionary for easier lookup

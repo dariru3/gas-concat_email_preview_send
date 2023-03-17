@@ -11,22 +11,22 @@ function showEmailAlerts_() {
 
   const boxAlert = ui.alert(
      'Boxリンクは共有されているのでしょうか？',
-     'このメールの全員がBoxフォルダーにアクセスできるのでしょうか？',
+     '共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
       ui.ButtonSet.YES_NO);
 
   if (boxAlert == ui.Button.YES) {
     const emailAlert = ui.alert(
-      'メールを送信してよろしでしょうか？',
+      'メールを送信してよいですか？',
       ui.ButtonSet.YES_NO);
     if (emailAlert == ui.Button.YES) {
       SpreadsheetApp.getActiveSpreadsheet().toast('メール送信中...');
       sendEmail_();
     } else {
-      ui.alert('メール送信中止');
+      ui.alert('メール配信停止中');
       console.warn("Email cancellled");
     }
   } else {
-    ui.alert('Boxフォルダの設定をご確認ください');
+    ui.alert('Boxフォルダのアクセス権限を変更してください');
     console.warn("Cancelled at Box alert");
   }
 }

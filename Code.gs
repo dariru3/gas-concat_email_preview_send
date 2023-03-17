@@ -1,5 +1,5 @@
 // global variables
-const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("テンプレート");
 // end of global variables
 
 /**
@@ -13,8 +13,7 @@ function concatEmailBody() {
   const startRow = 6; // spreadsheet row 7
   const headerCol = 2; // column C
   const contentCol = 3; // column D
-  const lastContentRow = SHEET.getRange(SHEET.getLastRow(), contentCol+1);
-  const lastRow = lastContentRow.getNextDataCell(SpreadsheetApp.Direction.UP).getRow();
+  const lastRow = SHEET.getLastRow();
   const previewCell = "G3"
 
   const openingGreeting = getDefaultGreeting_().openingGreeting;
@@ -37,9 +36,9 @@ function concatEmailBody() {
 
 function concatEmailSubject() {
   const previewSubjectCell = "G2";
-  const [n9, d4, m4, c6, d6] = SHEET.getRangeList(['N9','D4','M4','C6','D6']).getRanges().map(range => range.getValues().flat())
+  const [m2, d4, m4, c6, d6] = SHEET.getRangeList(['M2','D4','M4','C6','D6']).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(d6);
-  const subjectLine = `【${n9}】 ${d4} ${m4}字 ${c6} ${formattedDate}`;
+  const subjectLine = `【${m2}】 ${d4} ${m4}字 ${c6} ${formattedDate}`;
   console.log(subjectLine);
   SHEET.getRange(previewSubjectCell).setValue(subjectLine);
 }
