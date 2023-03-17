@@ -21,16 +21,21 @@ function showEmailAlerts_() {
     if (emailAlert == ui.Button.YES) {
       emailStatusToast_("sending");
       sendEmail_();
-    } else {
+    } else { // emailAlert == NO
       ui.alert('メール配信を中止しました');
       console.warn("Email cancellled");
     }
-  } else {
+  } else { // boxAlert == NO
     ui.alert('BoxフォルダのURL/アクセス権限を変更してください');
     console.warn("Cancelled at Box alert");
   }
 }
 
+/**
+ * Helper function to send out toast message on email status
+ * @param {string} status "Sending" or "Sent"
+ * @returns Triggers toast message on bottom right corner
+ */
 function emailStatusToast_(status) {
   let message = "";
 
