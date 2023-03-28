@@ -10,10 +10,14 @@ function getNameFromEmailAddress_(address, lookupColumn = 'C') {
 
   const nameLookup = {}; // dictionary for easier lookup
   emailNameList.forEach(row => {
-    if (lookupColumn === 'B') {
-      nameLookup[row[0]] = row[1];
-    } else {
-      nameLookup[row[0]] = row[2];
+    switch (lookupColumn) {
+      case 'B':
+        nameLookup[row[0]] = row[1];
+        break;
+      case 'C':
+      default:
+        nameLookup[row[0]] = row[2];
+        break;
     }
   });
 
