@@ -2,8 +2,7 @@
  * Function to send email.
  */
 function sendEmail_(){
-  const myEmailAddress = Session.getActiveUser().getEmail();
-  const myName = getNameFromEmailAddress_(myEmailAddress, 'B');
+  const myName = getNameFromEmailAddress_(MY_EMAIL, 'B');
   const subject = SHEET.getRange("G2").getValue();
   const body = SHEET.getRange("G3").getValue();
   const toAddresses = getEmailAddress_().toAddresses.join();
