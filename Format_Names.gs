@@ -3,13 +3,7 @@
  * @param {any} getMyName Optional: add to get user's name.
  * @returns Either user's name or to and cc names.
  */
-function concatNames_(getMyName) {
-  if(getMyName){
-    const myEmailAddress = Session.getActiveUser().getEmail();
-    console.log("My name:", getNameFromEmailAddress_(myEmailAddress));
-    return getNameFromEmailAddress_(myEmailAddress)
-  }
-
+function concatNames_() {
   const toAddresses = getEmailAddress_().toAddresses;
   const ccAddresses = getEmailAddress_().ccAddresses;
   const toNames = addSanToNames_(toAddresses);

@@ -3,17 +3,27 @@
  * @param {string} address Email address to look up.
  * @returns Preferred name when sending emails.
  */
-function getNameFromEmailAddress_(address){
+function getNameFromEmailAddress_(address, lookupColumn = 'C') {
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("メールリスト");
   const emailNameList = referenceSheet.getRange("A:C").getValues();
   const noNames = new Set(["edit_all@link-cc.co.jp"]);
 
   const nameLookup = {}; // dictionary for easier lookup
-  emailNameList.forEach(row => nameLookup[row[0]] = row[2]);
+  emailNameList.forEach(row => {
+    switch (lookupColumn) {
+      case 'B':
+        nameLookup[row[0]] = row[1];
+        break;
+      case 'C':
+      default:
+        nameLookup[row[0]] = row[2];
+        break;
+    }
+  });
 
-  if(address != "" && !noNames.has(address) && address in nameLookup){
+  if (address != "" && !noNames.has(address) && address in nameLookup) {
     console.log("Name:", nameLookup[address]);
-    return nameLookup[address]
+    return nameLookup[address];
   } else {
     console.error("Email address not found.");
   }

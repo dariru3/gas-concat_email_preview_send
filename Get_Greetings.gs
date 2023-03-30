@@ -3,7 +3,7 @@
  * @returns Opening and closing greetings.
  */
 function getDefaultGreeting_(){
-  const myName = concatNames_("Daryl");
+  const myName = getNameFromEmailAddress_(MY_EMAIL)
   let opening = concatNames_().toNames;
   let ccNames = concatNames_().ccNames;
   if(ccNames){

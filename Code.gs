@@ -1,5 +1,6 @@
 // global variables
 const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("テンプレート");
+const MY_EMAIL = Session.getActiveUser().getEmail();
 // end of global variables
 
 /**
