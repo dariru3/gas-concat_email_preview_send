@@ -3,8 +3,7 @@
  */
 function sendEmail(){
   const myName = getNameFromEmailAddress_(MY_EMAIL, 'B');
-  console.log("myName:", myName)
-  if(checkMyNameExists(myName) == false){
+  if(checkMyNameExists_(myName) == false){
     return;
   }
   const subject = SHEET.getRange("G2").getValue();
@@ -18,9 +17,7 @@ function sendEmail(){
   }
 
   try {
-    // GmailApp.sendEmail(toAddresses, subject, body, options)
-    console.log("Email subject:", subject)
-    console.log("Email body:", body)
+    GmailApp.sendEmail(toAddresses, subject, body, options)
     console.log("Success: email sent");
     emailStatusToast_("sent");
   }
@@ -29,11 +26,13 @@ function sendEmail(){
   }
 }
 
-function checkMyNameExists(name){
+function checkMyNameExists_(name){
   let myNameExists = true
-  if(name == undefined || name == ""){
+  const myPreferredName = getNameFromEmailAddress_(MY_EMAIL);
+  if(!name || !myPreferredName){ // checks if `name` and `myPreferredName` are not (!) "undefined" or blank
     undefinedNameAlert()
     emailStatusToast_("cancel")
+    console.warn("Cancellled at myName alert");
     myNameExists = false
   }
   return myNameExists
