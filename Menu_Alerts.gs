@@ -1,34 +1,43 @@
+// global ui variable
+const UI = SpreadsheetApp.getUi();
+// end of global ui variable
+
 function onOpen() {
-  var ui = SpreadsheetApp.getUi();
-  ui.createMenu('GASメール')
+  UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
       .addItem('メール送信', 'showEmailAlerts_')
       .addToUi();
 }
 
 function showEmailAlerts_() {
-  const ui = SpreadsheetApp.getUi();
-
-  const boxAlert = ui.alert(
+  const boxAlert = UI.alert(
      '相手が開けるBOXリンクですか',
      'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
-      ui.ButtonSet.YES_NO);
+      UI.ButtonSet.YES_NO);
 
-  if (boxAlert == ui.Button.YES) {
-    const emailAlert = ui.alert(
+  if (boxAlert == UI.Button.YES) {
+    const emailAlert = UI.alert(
       'メールを送信してよいですか？',
-      ui.ButtonSet.YES_NO);
-    if (emailAlert == ui.Button.YES) {
+      UI.ButtonSet.YES_NO);
+    if (emailAlert == UI.Button.YES) {
       emailStatusToast_("sending");
-      sendEmail_();
+      sendEmail();
     } else { // emailAlert == NO
-      ui.alert('メール配信を中止しました');
-      console.warn("Email cancellled");
+      UI.alert('メール配信を中止しました');
+      console.warn("Email cancelled");
     }
   } else { // boxAlert == NO
-    ui.alert('BoxフォルダのURL/アクセス権限を変更してください');
+    UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
     console.warn("Cancelled at Box alert");
   }
+}
+
+function undefinedNameAlert() {
+  UI.alert(
+    'あなたの名前が見つかりませんでした',
+    '「メールリスト」シートを更新してください',
+    UI.ButtonSet.OK
+  );
 }
 
 /**
@@ -45,6 +54,9 @@ function emailStatusToast_(status) {
       break;
     case "sent":
       message = "メールが送信されました";
+      break;
+    case "cancel":
+      message = "メール配信を中止しました";
       break;
     default:
       console.error("Toast message error!")

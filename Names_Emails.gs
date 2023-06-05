@@ -22,7 +22,6 @@ function getNameFromEmailAddress_(address, lookupColumn = 'C') {
   });
 
   if (address != "" && !noNames.has(address) && address in nameLookup) {
-    console.log("Name:", nameLookup[address]);
     return nameLookup[address];
   } else {
     console.error("Email address not found.");
@@ -46,6 +45,5 @@ function getEmailAddress_(){
   toAddresses = toAddresses.filter(a => a);
   ccAddresses = ccAddresses.filter(b => b);
 
-  console.log("Get email addresses", toAddresses, ccAddresses);
   return { toAddresses: toAddresses, ccAddresses: ccAddresses }
 }

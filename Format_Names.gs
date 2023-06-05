@@ -19,12 +19,13 @@ function concatNames_() {
  * @returns String of names.
  */
 function addSanToNames_(list){
-  let concatString = ""
+  let namesPlusSanString = ""
   for(let i=0; i<list.length; i++){
     const preferredName = getNameFromEmailAddress_(list[i])
     if(preferredName){
-      concatString += `${preferredName}さん、`;
+      namesPlusSanString += `${preferredName}さん、`;
     }
   }
-  return concatString
+  console.log("Names with -san:", namesPlusSanString);
+  return namesPlusSanString
 }
