@@ -25,7 +25,7 @@ function concatEmailBody() {
     let content = data[i][contentCol];
     // add to email body if there is content
     if(content) {
-      emailBody += formatHeaderContent_(header, content);
+      emailBody += formatHeader_Content_(header, content);
     }
   }
   emailBody += `\n\n${closingGreeting}`;
