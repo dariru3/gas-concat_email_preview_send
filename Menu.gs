@@ -20,7 +20,7 @@ function showEmailAlerts_() {
       ui.ButtonSet.YES_NO);
     if (emailAlert == ui.Button.YES) {
       emailStatusToast_("sending");
-      sendEmail_();
+      sendEmail();
     } else { // emailAlert == NO
       ui.alert('メール配信を中止しました');
       console.warn("Email cancellled");
@@ -29,6 +29,14 @@ function showEmailAlerts_() {
     ui.alert('BoxフォルダのURL/アクセス権限を変更してください');
     console.warn("Cancelled at Box alert");
   }
+}
+
+function undefinedNameAlert() {
+  const ui = SpreadsheetApp.getUi();
+  ui.alert(
+    'Name not found. Update メールリスト',
+    ui.ButtonSet.OK
+  );
 }
 
 /**
@@ -45,6 +53,9 @@ function emailStatusToast_(status) {
       break;
     case "sent":
       message = "メールが送信されました";
+      break;
+    case "cancel":
+      message = "Email cancelled";
       break;
     default:
       console.error("Toast message error!")

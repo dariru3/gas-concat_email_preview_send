@@ -5,7 +5,9 @@ function sendEmail(){
   const myName = getNameFromEmailAddress_(MY_EMAIL, 'B');
   console.log("myName:", myName)
   if(myName == undefined || myName == ""){
-    return "Your name not found"
+    undefinedNameAlert()
+    emailStatusToast_("cancel")
+    return
   }
   const subject = SHEET.getRange("G2").getValue();
   const body = SHEET.getRange("G3").getValue();
