@@ -4,10 +4,8 @@
 function sendEmail(){
   const myName = getNameFromEmailAddress_(MY_EMAIL, 'B');
   console.log("myName:", myName)
-  if(myName == undefined || myName == ""){
-    undefinedNameAlert()
-    emailStatusToast_("cancel")
-    return
+  if(checkMyNameExists(myName) == false){
+    return;
   }
   const subject = SHEET.getRange("G2").getValue();
   const body = SHEET.getRange("G3").getValue();
@@ -29,4 +27,14 @@ function sendEmail(){
   catch(e){
     throw "Email error:", e
   }
+}
+
+function checkMyNameExists(name){
+  let myNameExists = true
+  if(name == undefined || name == ""){
+    undefinedNameAlert()
+    emailStatusToast_("cancel")
+    myNameExists = false
+  }
+  return myNameExists
 }
