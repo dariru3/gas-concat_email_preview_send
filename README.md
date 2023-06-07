@@ -20,3 +20,6 @@ To use gas-concat_email_preview, you need:
 1. Enter data in the "content" row of your Google Sheet.
 2. If there is data, it will be automatically added to the email body.
 3. Optional information should be left blank without deleting or editing the "heading" row.
+
+## Screenshot
+![Screenshot 2023-06-07 at 10 14 36](https://github.com/dariru3/gas-concat_email_preview_send/assets/107824734/b6afed4c-0120-4232-8000-17ff72516d56)
