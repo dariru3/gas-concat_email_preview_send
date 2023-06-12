@@ -32,10 +32,10 @@ function showEmailAlerts_() {
   }
 }
 
-function undefinedNameAlert() {
+function undefinedNameAlert_() {
   UI.alert(
-    'あなたの名前が見つかりませんでした',
-    '「メールリスト」シートを更新してください',
+    'あなたの名前が見つかりませんでした。',
+    '「メールリスト」のシートの、A～C列に入力してください',
     UI.ButtonSet.OK
   );
 }
