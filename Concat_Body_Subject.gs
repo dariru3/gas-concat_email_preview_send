@@ -31,12 +31,30 @@ function concatEmailBody() {
 function concatEmailSubject_() {
   const clientNameCell = 'F3';
   const assignTitleCell = 'F4';
-  const characterNumberCell = '04';
+  const characterNumberCell = 'O4';
   const dueHeaderCell = 'E6';
   const dueDateCell = 'F6';
-  const [m2, d4, m4, c6, d6] = SHEET.getRangeList(['M2','D4','M4','C6','D6']).getRanges().map(range => range.getValues().flat())
-  const formattedDate = formatDate_(d6);
-  const subjectLine = `【${m2}】 ${d4} ${m4}字 ${c6} ${formattedDate}`;
+  const [clientName, assignTitle, characterNumber, dueHeader, dueDate] = SHEET.getRangeList([clientNameCell, assignTitleCell, characterNumberCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
+  const formattedDate = formatDate_(dueDate);
+  const subjectLine = `【${clientName}】 ${assignTitle} ${characterNumber}字 ${dueHeader} ${formattedDate}`;
   console.log("Subject line:", subjectLine);
   SHEET.getRange(PREVIEW_SUBJECT_CELL).setValue(subjectLine);
+}
+
+function getTaskName() {
+  const taskFooter = SHEET.getRange('A2').getValue();
+  const taskValues = SHEET.getRange('A3:B5').getValues();
+  let taskTitle = "";
+  for(let i = 0; i < taskValues.length; i++) {
+    console.log(taskValues[i])
+    if(taskValues[i][1] == true){
+      taskTitle = taskValues[i][0]
+      break
+    }
+  }
+  if(taskTitle == ""){
+    console.error("No task chosen!")
+  } else {
+    console.log(`Return: ${taskTitle}${taskFooter}`)
+  }
 }
