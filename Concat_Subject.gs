@@ -8,7 +8,8 @@ function concatEmailSubject_() {
   const dueDateCell = 'F6';
   const taskTitle = getTaskTitle();
   const characterCount = getCharacterCount();
-  const [clientName, assignTitle, dueHeader, dueDate] = SHEET.getRangeList([clientNameCell, assignTitleCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
+  const clientName = checkForSama(clientNameCell);
+  const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([assignTitleCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
   let subjectLine = "";
   if(taskTitle == "翻訳依頼" || taskTitle == "追つかせ依頼") {
@@ -70,4 +71,12 @@ function getCharacterCount() {
     count += characterCountValues[i][0];
   }
   console.log(count);
+}
+
+function checkForSama(cell) {
+  let clientName = SHEET.getRange(cell).getValue();
+  if(clientName.slice(-1) !== "様") {
+    clientName += "様";
+  }
+  return clientName
 }
