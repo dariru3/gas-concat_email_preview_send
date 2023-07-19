@@ -2,19 +2,18 @@
  * Function to put together email subject and display preview in spreadsheet.
  */
 function concatEmailSubject_() {
-  const clientNameCell = 'F3';
-  const assignTitleCell = 'F4';
-  const dueHeaderCell = 'E6';
-  const dueDateCell = 'F6';
+  const translateTask = "翻訳依頼";
+  const additionalTask = "追つかせ依頼";
+  const layoutCheckTask = "レイアウトチェック依頼"
   const taskTitle = getTaskTitle();
   const characterCount = getCharacterCount();
-  const clientName = checkForSama(clientNameCell);
-  const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([assignTitleCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
+  const clientName = checkForSama(CLIENT_CELL);
+  const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([ASSIGN_CELL, DUE_HEADER_CELL, DUE_DATE_CELL]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
   let subjectLine = "";
-  if(taskTitle == "翻訳依頼" || taskTitle == "追つかせ依頼") {
+  if(taskTitle == translateTask || taskTitle == additionalTask) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterCount}字 ${dueHeader} ${formattedDate}`;
-  } else if (taskTitle == "レイアウトチェック依頼") {
+  } else if (taskTitle == layoutCheckTask) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
   } else {
     console.error("Task title error!")
@@ -24,15 +23,13 @@ function concatEmailSubject_() {
 }
 
 function getTaskTitle() {
-  const taskFooter = SHEET.getRange('A2').getValue();
-  const taskValues = SHEET.getRange('A3:B5').getValues();
   let taskTitle = "";
   let checkboxCounter = 0;
-  for(let i = 0; i < taskValues.length; i++) {
-    console.log(taskValues[i])
-    if(taskValues[i][1] == true){
+  for(let i = 0; i < TASK_VALUES.length; i++) {
+    console.log(TASK_VALUES[i])
+    if(TASK_VALUES[i][1] == true){
       checkboxCounter += 1;
-      taskTitle = taskValues[i][0]
+      taskTitle = TASK_VALUES[i][0]
     }
   }
   if(taskTitle == ""){
@@ -45,7 +42,7 @@ function getTaskTitle() {
     return "ERROR"
   }
    else {
-    return `${taskTitle}${taskFooter}`
+    return `${taskTitle}${TASK_FOOTER}`
   }
 }
 
@@ -55,8 +52,10 @@ function taskNameAlert_(alertNumber) {
   let message = "";
   if(alertNumber == 1){
     message = messageNoTask
-  } else {
+  } else if(alertNumber == 2) {
     message = messageTooManyTasks
+  } else {
+    console.error("taskNameAlert error!")
   }
   UI.alert(
     message,
@@ -65,12 +64,12 @@ function taskNameAlert_(alertNumber) {
 }
 
 function getCharacterCount() {
-  const characterCountValues = SHEET.getRange('F9:F10').getValues();
   let count = 0;
-  for(let i = 0; i < characterCountValues.length; i++){
-    count += characterCountValues[i][0];
+  for(let i = 0; i < CHAR_COUNT_VALUES.length; i++){
+    count += CHAR_COUNT_VALUES[i][0];
   }
   console.log(count);
+  return count
 }
 
 function checkForSama(cell) {
