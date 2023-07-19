@@ -2,12 +2,11 @@
  * Function to send email.
  */
 function sendEmail(){
-  const myName = getNameFromEmailAddress_(MY_EMAIL, 'B');
+  const emailNameCol = 'B'
+  const myName = getNameFromEmailAddress_(MY_EMAIL, emailNameCol);
   if(checkMyNameExists_(myName) == false){
     return;
   }
-  const subject = SHEET.getRange("G2").getValue();
-  const body = SHEET.getRange("G3").getValue();
   const toAddresses = getEmailAddress_().toAddresses.join();
   const ccAddresses = getEmailAddress_().ccAddresses.join();
   console.log("Send emails to:", toAddresses, ccAddresses);
@@ -17,7 +16,7 @@ function sendEmail(){
   }
 
   try {
-    GmailApp.sendEmail(toAddresses, subject, body, options)
+    GmailApp.sendEmail(toAddresses, SUBJECT_CELL, BODY_CELL, options)
     console.log("Success: email sent");
     emailStatusToast_("sent");
   }

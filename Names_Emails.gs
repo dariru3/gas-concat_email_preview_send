@@ -33,14 +33,11 @@ function getNameFromEmailAddress_(address, lookupColumn = 'C') {
  * @returns Array with two lists: to addresses and cc addresses
  */
 function getEmailAddress_(){
-  // connect to sheet
-  let emailAddresses = SHEET.getRange("A3:B11").getValues();
-
   let toAddresses = [];
   let ccAddresses = [];
-  for(let i=0; i<emailAddresses.length; i++){
-    toAddresses.push(emailAddresses[i][0]);
-    ccAddresses.push(emailAddresses[i][1]);
+  for(let i=0; i<EMAIL_ADDRESSES.length; i++){
+    toAddresses.push(EMAIL_ADDRESSES[i][0]);
+    ccAddresses.push(EMAIL_ADDRESSES[i][1]);
   }
   toAddresses = toAddresses.filter(a => a);
   ccAddresses = ccAddresses.filter(b => b);
