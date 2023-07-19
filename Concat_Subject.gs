@@ -1,45 +1,18 @@
 /**
- * Function to put together email body and display preview in spreadsheet.
- */
-function concatEmailBody() {
-  concatEmailSubject_();
-  // connect to spreadsheet and values
-  const data = SHEET.getDataRange().getValues();
-  const lastRow = SHEET.getLastRow();
-
-  const openingGreeting = getDefaultGreeting_().openingGreeting;
-  const closingGreeting = getDefaultGreeting_().closingGreeting;
-  let emailBody = openingGreeting
-  // loop through column C and D for email content
-  for(let i=START_ROW; i<lastRow; i++){
-    let header = data[i][HEADER_COL];
-    let content = data[i][CONTENT_COL];
-    // add to email body if there is content
-    if(content) {
-      emailBody += formatHeader_Content_(header, content);
-    }
-  }
-  emailBody += `\n\n${closingGreeting}`;
-
-  console.log("Email body:", emailBody);
-  SHEET.getRange(PREVIEW_BODY_CELL).setValue(emailBody);
-}
-
-/**
  * Function to put together email subject and display preview in spreadsheet.
  */
 function concatEmailSubject_() {
   const clientNameCell = 'F3';
   const assignTitleCell = 'F4';
-  const characterNumberCell = 'O4';
   const dueHeaderCell = 'E6';
   const dueDateCell = 'F6';
   const taskTitle = getTaskTitle();
-  const [clientName, assignTitle, characterNumber, dueHeader, dueDate] = SHEET.getRangeList([clientNameCell, assignTitleCell, characterNumberCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
+  const characterCount = getCharacterCount();
+  const [clientName, assignTitle, dueHeader, dueDate] = SHEET.getRangeList([clientNameCell, assignTitleCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
   let subjectLine = "";
   if(taskTitle == "翻訳依頼" || taskTitle == "追つかせ依頼") {
-    subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterNumber}字 ${dueHeader} ${formattedDate}`;
+    subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterCount}字 ${dueHeader} ${formattedDate}`;
   } else if (taskTitle == "レイアウトチェック依頼") {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
   } else {
@@ -88,4 +61,13 @@ function taskNameAlert_(alertNumber) {
     message,
     UI.ButtonSet.OK
   );
+}
+
+function getCharacterCount() {
+  const characterCountValues = SHEET.getRange('F9:F10').getValues();
+  let count = 0;
+  for(let i = 0; i < characterCountValues.length; i++){
+    count += characterCountValues[i][0];
+  }
+  console.log(count);
 }
