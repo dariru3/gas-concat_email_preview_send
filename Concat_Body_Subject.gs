@@ -37,7 +37,14 @@ function concatEmailSubject_() {
   const taskTitle = getTaskTitle();
   const [clientName, assignTitle, characterNumber, dueHeader, dueDate] = SHEET.getRangeList([clientNameCell, assignTitleCell, characterNumberCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
-  const subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterNumber}字 ${dueHeader} ${formattedDate}`;
+  let subjectLine = "";
+  if(taskTitle == "翻訳依頼" || taskTitle == "追つかせ依頼") {
+    subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterNumber}字 ${dueHeader} ${formattedDate}`;
+  } else if (taskTitle == "レイアウトチェック依頼") {
+    subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
+  } else {
+    console.error("Task title error!")
+  }
   console.log("Subject line:", subjectLine);
   SHEET.getRange(PREVIEW_SUBJECT_CELL).setValue(subjectLine);
 }
@@ -57,9 +64,11 @@ function getTaskTitle() {
   if(taskTitle == ""){
     console.error("No task chosen!");
     taskNameAlert_(1);
+    return "ERROR"
   } else if(checkboxCounter >= 2){
     console.error("Too many tasks chosen!");
     taskNameAlert_(2);
+    return "ERROR"
   }
    else {
     return `${taskTitle}${taskFooter}`
