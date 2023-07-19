@@ -34,27 +34,49 @@ function concatEmailSubject_() {
   const characterNumberCell = 'O4';
   const dueHeaderCell = 'E6';
   const dueDateCell = 'F6';
+  const taskTitle = getTaskTitle();
   const [clientName, assignTitle, characterNumber, dueHeader, dueDate] = SHEET.getRangeList([clientNameCell, assignTitleCell, characterNumberCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
-  const subjectLine = `【${clientName}】 ${assignTitle} ${characterNumber}字 ${dueHeader} ${formattedDate}`;
+  const subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterNumber}字 ${dueHeader} ${formattedDate}`;
   console.log("Subject line:", subjectLine);
   SHEET.getRange(PREVIEW_SUBJECT_CELL).setValue(subjectLine);
 }
 
-function getTaskName() {
+function getTaskTitle() {
   const taskFooter = SHEET.getRange('A2').getValue();
   const taskValues = SHEET.getRange('A3:B5').getValues();
   let taskTitle = "";
+  let checkboxCounter = 0;
   for(let i = 0; i < taskValues.length; i++) {
     console.log(taskValues[i])
     if(taskValues[i][1] == true){
+      checkboxCounter += 1;
       taskTitle = taskValues[i][0]
-      break
     }
   }
   if(taskTitle == ""){
-    console.error("No task chosen!")
-  } else {
-    console.log(`Return: ${taskTitle}${taskFooter}`)
+    console.error("No task chosen!");
+    taskNameAlert_(1);
+  } else if(checkboxCounter >= 2){
+    console.error("Too many tasks chosen!");
+    taskNameAlert_(2);
   }
+   else {
+    return `${taskTitle}${taskFooter}`
+  }
+}
+
+function taskNameAlert_(alertNumber) {
+  const messageNoTask = "Please choose a task in Column B";
+  const messageTooManyTasks = "Please choose only 1 task in Column B";
+  let message = "";
+  if(alertNumber == 1){
+    message = messageNoTask
+  } else {
+    message = messageTooManyTasks
+  }
+  UI.alert(
+    message,
+    UI.ButtonSet.OK
+  );
 }
