@@ -6,6 +6,7 @@ function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
       .addItem('メール送信', 'showEmailAlerts_')
+      .addItem('Create email draft', 'showDraftAlerts_')
       .addToUi();
 }
 
@@ -21,10 +22,33 @@ function showEmailAlerts_() {
       UI.ButtonSet.YES_NO);
     if (emailAlert == UI.Button.YES) {
       emailStatusToast_("sending");
-      sendEmail();
+      sendEmail("immediate");
     } else { // emailAlert == NO
       UI.alert('メール配信を中止しました');
       console.warn("Email cancelled");
+    }
+  } else { // boxAlert == NO
+    UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
+    console.warn("Cancelled at Box alert");
+  }
+}
+
+function showDraftAlerts_() {
+  const boxAlert = UI.alert(
+     '相手が開けるBOXリンクですか',
+     'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
+      UI.ButtonSet.YES_NO);
+
+  if (boxAlert == UI.Button.YES) {
+    const emailAlert = UI.alert(
+      'Create email draft?',
+      UI.ButtonSet.YES_NO);
+    if (emailAlert == UI.Button.YES) {
+      emailStatusToast_("drafting");
+      sendEmail("draft");
+    } else { // emailAlert == NO
+      UI.alert('Email draft cancelled');
+      console.warn("Draft cancelled");
     }
   } else { // boxAlert == NO
     UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
@@ -57,6 +81,12 @@ function emailStatusToast_(status) {
       break;
     case "cancel":
       message = "メール配信を中止しました";
+      break;
+    case "drafting":
+      message = "Creating email draft";
+      break;
+    case "draft":
+      message = "Email draft created. Check draft box.";
       break;
     default:
       console.error("Toast message error!")

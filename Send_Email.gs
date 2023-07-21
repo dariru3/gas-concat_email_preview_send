@@ -1,7 +1,7 @@
 /**
  * Function to send email.
  */
-function sendEmail(){
+function sendEmail(type){
   const emailNameCol = 'B'
   const myName = getNameFromEmailAddress_(MY_EMAIL, emailNameCol);
   if(checkMyNameExists_(myName) == false){
@@ -15,14 +15,28 @@ function sendEmail(){
     name: myName
   }
 
-  try {
+  if(type == "immediate"){
+    try {
     GmailApp.sendEmail(toAddresses, SUBJECT_CELL, BODY_CELL, options)
     console.log("Success: email sent");
     emailStatusToast_("sent");
+    }
+    catch(e){
+      throw "Email error:", e
+    }
   }
-  catch(e){
-    throw "Email error:", e
+
+  if(type == "draft"){
+    try {
+    GmailApp.createDraft(toAddresses, SUBJECT_CELL, BODY_CELL, options)
+    console.log("Success: draft created");
+    emailStatusToast_("draft");
+    }
+    catch(e){
+      throw "Email error:", e
+    }
   }
+  
 }
 
 function checkMyNameExists_(name){
