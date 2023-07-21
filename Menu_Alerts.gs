@@ -5,50 +5,33 @@ const UI = SpreadsheetApp.getUi();
 function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
-      .addItem('メール送信', 'showEmailAlerts_')
-      .addItem('Create email draft', 'showDraftAlerts_')
+      .addItem('メール送信', 'emailAlertsHandler_')
+      .addItem('Create email draft', 'draftsAlertsHandler_')
       .addToUi();
 }
 
-function showEmailAlerts_() {
-  const boxAlert = UI.alert(
-     '相手が開けるBOXリンクですか',
-     'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
-      UI.ButtonSet.YES_NO);
-
-  if (boxAlert == UI.Button.YES) {
-    const emailAlert = UI.alert(
-      'メールを送信してよいですか？',
-      UI.ButtonSet.YES_NO);
-    if (emailAlert == UI.Button.YES) {
-      emailStatusToast_("sending");
-      sendEmail("immediate");
-    } else { // emailAlert == NO
-      UI.alert('メール配信を中止しました');
-      console.warn("Email cancelled");
-    }
-  } else { // boxAlert == NO
-    UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
-    console.warn("Cancelled at Box alert");
-  }
+function emailAlertsHandler_() {
+  showEmailAlerts_('メールを送信して良いですか？', 'sending', 'immediate');
 }
 
-function showDraftAlerts_() {
+function draftsAlertsHandler_() {
+  showEmailAlerts_('Create email draft?', 'drafting', 'draft');
+}
+
+function showEmailAlerts_(emailAlertMessage, emailStatusMessage, emailParam) {
   const boxAlert = UI.alert(
      '相手が開けるBOXリンクですか',
      'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
       UI.ButtonSet.YES_NO);
 
   if (boxAlert == UI.Button.YES) {
-    const emailAlert = UI.alert(
-      'Create email draft?',
-      UI.ButtonSet.YES_NO);
+    const emailAlert = UI.alert(emailAlertMessage, UI.ButtonSet.YES_NO);
     if (emailAlert == UI.Button.YES) {
-      emailStatusToast_("drafting");
-      sendEmail("draft");
+      emailStatusToast_(emailStatusMessage);
+      sendEmail(emailParam);
     } else { // emailAlert == NO
-      UI.alert('Email draft cancelled');
-      console.warn("Draft cancelled");
+      UI.alert('中止しました');
+      console.warn("Email action cancelled");
     }
   } else { // boxAlert == NO
     UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
