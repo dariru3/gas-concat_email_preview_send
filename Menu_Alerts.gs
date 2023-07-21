@@ -28,7 +28,7 @@ function showEmailAlerts_(emailAlertMessage, emailStatusMessage, emailParam) {
     const emailAlert = UI.alert(emailAlertMessage, UI.ButtonSet.YES_NO);
     if (emailAlert == UI.Button.YES) {
       emailStatusToast_(emailStatusMessage);
-      sendEmail(emailParam);
+      prepareEmail(emailParam);
     } else { // emailAlert == NO
       UI.alert('中止しました');
       console.warn("Email action cancelled");

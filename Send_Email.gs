@@ -1,42 +1,40 @@
 /**
  * Function to send email.
  */
-function sendEmail(type){
+function prepareEmail(emailParam){
   const emailNameCol = 'B'
   const myName = getNameFromEmailAddress_(MY_EMAIL, emailNameCol);
+
   if(checkMyNameExists_(myName) == false){
     return;
   }
-  const toAddresses = getEmailAddress_().toAddresses.join();
-  const ccAddresses = getEmailAddress_().ccAddresses.join();
-  console.log("Send emails to:", toAddresses, ccAddresses);
+
+  const {toAddresses, ccAddresses} = getEmailAddress_();
+  // console.log("Send emails to:", toAddresses, ccAddresses);
   const options = {
-    cc: ccAddresses,
+    cc: ccAddresses.join(),
     name: myName
   }
 
-  if(type == "immediate"){
-    try {
+  try {
+    sendEmail_(emailParam, toAddresses, options);
+  } catch (e) {
+    console.error("Email error:", e);
+  }
+}
+
+function sendEmail_(emailParam, toAddresses, options) {
+  if(emailParam == "immediate") {
     GmailApp.sendEmail(toAddresses, SUBJECT_VALUE, BODY_VALUE, options)
-    console.log("Success: email sent");
+    // console.log("Success: email sent");
     emailStatusToast_("sent");
-    }
-    catch(e){
-      throw "Email error:", e
-    }
   }
 
-  if(type == "draft"){
-    try {
+  if(emailParam == "draft") {
     GmailApp.createDraft(toAddresses, SUBJECT_VALUE, BODY_VALUE, options)
-    console.log("Success: draft created");
+    // console.log("Success: draft created");
     emailStatusToast_("draft");
-    }
-    catch(e){
-      throw "Email error:", e
-    }
   }
-  
 }
 
 function checkMyNameExists_(name){
