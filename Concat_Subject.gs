@@ -23,7 +23,7 @@ function concatEmailSubject_() {
     subjectLine = "What are you asking for?"
   }
   console.log("Subject line:", subjectLine);
-  SHEET.getRange(PREVIEW_SUBJECT_CELL).setValue(subjectLine);
+  SHEET.getRange(SUBJECT_CELL).setValue(subjectLine);
 }
 
 function getTaskTitle() {

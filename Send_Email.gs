@@ -17,7 +17,7 @@ function sendEmail(type){
 
   if(type == "immediate"){
     try {
-    GmailApp.sendEmail(toAddresses, SUBJECT_CELL, BODY_CELL, options)
+    GmailApp.sendEmail(toAddresses, SUBJECT_VALUE, BODY_VALUE, options)
     console.log("Success: email sent");
     emailStatusToast_("sent");
     }
@@ -28,7 +28,7 @@ function sendEmail(type){
 
   if(type == "draft"){
     try {
-    GmailApp.createDraft(toAddresses, SUBJECT_CELL, BODY_CELL, options)
+    GmailApp.createDraft(toAddresses, SUBJECT_VALUE, BODY_VALUE, options)
     console.log("Success: draft created");
     emailStatusToast_("draft");
     }

@@ -10,16 +10,16 @@ const CHAR_COUNT_VALUES = SHEET.getRange('F9:F10').getValues();
 
 
 // subject line
-const PREVIEW_SUBJECT_CELL = "I2"
-const SUBJECT_CELL = SHEET.getRange(PREVIEW_SUBJECT_CELL).getValue();
+const SUBJECT_CELL = "I2"
+const SUBJECT_VALUE = SHEET.getRange(SUBJECT_CELL).getValue();
 const CLIENT_CELL = 'F3';
 const ASSIGN_CELL = 'F4';
 const DUE_HEADER_CELL = 'E6';
 const DUE_DATE_CELL = 'F6';
 
 // email body
-const PREVIEW_BODY_CELL = "I3"
-const BODY_CELL = SHEET.getRange(PREVIEW_BODY_CELL).getValue();
+const BODY_CELL = "I3"
+const BODY_VALUE = SHEET.getRange(BODY_CELL).getValue();
 
 // tasks
 const TASK_FOOTER = SHEET.getRange('A2').getValue();
