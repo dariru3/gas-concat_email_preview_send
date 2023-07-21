@@ -7,7 +7,7 @@
 function formatHeader_Content_(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
-  const projectType = new Set(["新規", "既存", "更新"]);
+  const projectType = new Set(["新規（字数）", "既存（字数）", "更新（字数）", "ゲラ（ページ数）"]);
   const characterCounter = "字";
 
   let headersContent = "";

@@ -2,6 +2,7 @@
  * Function to put together email subject and display preview in spreadsheet.
  */
 function concatEmailSubject_() {
+  let subjectLine = "";
   const translateTask = "翻訳依頼";
   const additionalTask = "追つかせ依頼";
   const layoutCheckTask = "レイアウトチェック依頼"
@@ -10,13 +11,16 @@ function concatEmailSubject_() {
   const clientName = checkForSama(CLIENT_CELL);
   const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([ASSIGN_CELL, DUE_HEADER_CELL, DUE_DATE_CELL]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
-  let subjectLine = "";
+  
   if(taskTitle == translateTask || taskTitle == additionalTask) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterCount}字 ${dueHeader} ${formattedDate}`;
   } else if (taskTitle == layoutCheckTask) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
   } else {
     console.error("Task title error!")
+  }
+  if(taskTitle == layoutCheckTask && characterCount > 0){
+    subjectLine = "What are you asking for?"
   }
   console.log("Subject line:", subjectLine);
   SHEET.getRange(PREVIEW_SUBJECT_CELL).setValue(subjectLine);
