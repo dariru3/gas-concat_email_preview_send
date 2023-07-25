@@ -6,7 +6,7 @@ function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
       .addItem('メール送信', 'emailAlertsHandler_')
-      .addItem('Create email draft', 'draftsAlertsHandler_')
+      .addItem('メール原稿の作成', 'draftsAlertsHandler_')
       .addToUi();
 }
 
@@ -15,7 +15,7 @@ function emailAlertsHandler_() {
 }
 
 function draftsAlertsHandler_() {
-  showEmailAlerts_('Create email draft?', 'drafting', 'draft');
+  showEmailAlerts_('メール原稿の作成して良いですか？', 'drafting', 'draft');
 }
 
 function showEmailAlerts_(emailAlertMessage, emailStatusMessage, emailParam) {
@@ -66,10 +66,10 @@ function emailStatusToast_(status) {
       message = "メール配信を中止しました";
       break;
     case "drafting":
-      message = "Creating email draft";
+      message = "メール原稿の作成中";
       break;
     case "draft":
-      message = "Email draft created. Check draft box.";
+      message = "下書きメールが作成されました。下書きボックスを確認してください。";
       break;
     default:
       console.error("Toast message error!")

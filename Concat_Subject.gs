@@ -20,7 +20,7 @@ function concatEmailSubject_() {
     console.error("Task title error!")
   }
   if(taskTitle == layoutCheckTask && characterCount > 0){
-    subjectLine = "What are you asking for?"
+    taskNameAlert_(3);
   }
   console.log("Subject line:", subjectLine);
   SHEET.getRange(SUBJECT_CELL).setValue(subjectLine);
@@ -51,13 +51,16 @@ function getTaskTitle() {
 }
 
 function taskNameAlert_(alertNumber) {
-  const messageNoTask = "Please choose a task in Column B";
-  const messageTooManyTasks = "Please choose only 1 task in Column B";
+  const messageNoTask = "B欄のタスクを選択してください";
+  const messageTooManyTasks = "B欄のタスクを1つだけ選択してください";
+  const messageCharCountError = "レイアウトチェックなので文字数を削除してください";
   let message = "";
   if(alertNumber == 1){
     message = messageNoTask
   } else if(alertNumber == 2) {
     message = messageTooManyTasks
+  } else if(alertNumber == 3){
+    message = messageCharCountError
   } else {
     console.error("taskNameAlert error!")
   }
