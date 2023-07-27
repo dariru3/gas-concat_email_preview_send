@@ -7,6 +7,7 @@ const START_ROW = 6; // spreadsheet row 7
 const HEADER_COL = 4; // column C
 const CONTENT_COL = 5; // column D
 const CHAR_COUNT_VALUES = SHEET.getRange('F9:F10').getValues();
+const PAGE_COUNT_VALUE = SHEET.getRange('F12').getValue();
 
 
 // subject line

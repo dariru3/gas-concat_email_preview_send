@@ -7,18 +7,26 @@ function concatEmailSubject_() {
   const additionalTask = "追つかせ依頼";
   const layoutCheckTask = "レイアウトチェック依頼"
   const taskTitle = getTaskTitle();
-  const characterCount = getCharacterCount();
+  Logger.log(`taskTitle: ${taskTitle}`);
+  if(taskTitle == "" || taskTitle === undefined) {
+    taskNameAlert_('no task');
+    subjectLine = "エラー： B欄のタスクを選択してください"
+    SHEET.getRange(SUBJECT_CELL).setValue(subjectLine);
+    return
+  }
+  const [characterCount, pageCount] = getCharacterCount();
   const clientName = checkForSama(CLIENT_CELL);
   const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([ASSIGN_CELL, DUE_HEADER_CELL, DUE_DATE_CELL]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
   
   if((taskTitle == translateTask || taskTitle == additionalTask) && characterCount > 0) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterCount}字 ${dueHeader} ${formattedDate}`;
-  } else if (taskTitle == layoutCheckTask) {
+  } else if (taskTitle == layoutCheckTask && pageCount > 0) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
   } else {
     console.error("Task title error!")
-    subjectLine = taskTitle;
+    subjectLine = `エラー： 字数かページ数を入力してくさい`
+    taskNameAlert_("no characters or pages count")
   }
   if(taskTitle == layoutCheckTask && characterCount > 0){
     taskNameAlert_('characters and pages mixed');
@@ -37,8 +45,8 @@ function getTaskTitle() {
   }
   if(taskTitle == "") {
   console.error("No task chosen!");
-  taskNameAlert_('no task');
-  return "エラー: B欄のタスクを選択してください";
+  // taskNameAlert_('no task');
+  return // "エラー: B欄のタスクを選択してください";
   } else {
     return `${taskTitle}${TASK_FOOTER}`
   }
@@ -76,31 +84,41 @@ function onEdit(e) {
   } 
 }
 
-
 function taskNameAlert_(alertType) {
   const messageNoTask = "B欄のタスクを選択してください";
   const messageCharCountError = "レイアウトチェックなので文字数を削除してください";
+  const messageNoCharPageCount = "字数かページ数を入力してくさい";
   let message = "";
-  if(alertType == 'no task'){
-    message = messageNoTask
-  } else if(alertType == 'characters and pages mixed'){
-    message = messageCharCountError
-  } else {
-    console.error("taskNameAlert error!")
+
+  switch(alertType) {
+    case 'no task':
+      message = messageNoTask;
+      break;
+    case 'characters and pages mixed':
+      message = messageCharCountError;
+      break;
+    case 'no characters or pages count':
+      message = messageNoCharPageCount;
+      break;
+    default:
+      console.error("taskNameAlert error!");
+      message = "エラー：不明なアラートタイプ"
   }
+
   UI.alert(
     message,
     UI.ButtonSet.OK
   );
 }
 
+
 function getCharacterCount() {
-  let count = 0;
+  let charCount = 0;
   for(let i = 0; i < CHAR_COUNT_VALUES.length; i++){
-    count += CHAR_COUNT_VALUES[i][0];
+    charCount += CHAR_COUNT_VALUES[i][0];
   }
-  console.log(count);
-  return count
+
+  return [charCount, PAGE_COUNT_VALUE]
 }
 
 function checkForSama(cell) {
