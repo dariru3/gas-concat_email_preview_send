@@ -6,7 +6,7 @@ function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
       .addItem('メール送信', 'emailAlertsHandler_')
-      .addItem('メール原稿の作成', 'draftsAlertsHandler_')
+      .addItem('下書きメールの作成', 'draftsAlertsHandler_')
       .addToUi();
 }
 
@@ -66,7 +66,7 @@ function emailStatusToast_(status) {
       message = "メール配信を中止しました";
       break;
     case "drafting":
-      message = "メール原稿の作成中";
+      message = "下書きメールの作成中";
       break;
     case "draft":
       message = "下書きメールが作成されました。下書きボックスを確認してください。";

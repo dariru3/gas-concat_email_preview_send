@@ -39,11 +39,11 @@ function getTaskTitle() {
   if(taskTitle == ""){
     console.error("No task chosen!");
     taskNameAlert_(1);
-    return "ERROR"
+    // return "ERROR"
   } else if(checkboxCounter >= 2){
     console.error("Too many tasks chosen!");
     taskNameAlert_(2);
-    return "ERROR"
+    // return "ERROR"
   }
    else {
     return `${taskTitle}${TASK_FOOTER}`
