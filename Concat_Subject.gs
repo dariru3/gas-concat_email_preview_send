@@ -50,6 +50,34 @@ function getTaskTitle() {
   }
 }
 
+/**
+ * Triggered when an edit occurs in the spreadsheet.
+ * @param {Object} e - Event parameter that can contain information about the context
+ *                       that triggered the event (e.g., user, range, value).
+ */
+function onEdit(e) {
+  const range = e.range;
+  const newValue = e.value;
+  const sheet = e.source.getActiveSheet();
+  const checkboxRange = sheet.getRange("B3:B5");
+  Logger.log(`newValue: ${newValue}`)
+  Logger.log(`log 1: ${checkboxRange.getValues()}`);
+
+  if (range.getColumn() === checkboxRange.getColumn() && range.getRow() >= checkboxRange.getRow() 
+      && range.getRow() <= checkboxRange.getRow() + checkboxRange.getHeight() - 1) {
+
+    if (newValue === "TRUE") {
+      const values = checkboxRange.getValues().map((row, i) => {
+        row[0] = i === range.getRow() - checkboxRange.getRow();
+        return row;
+      });
+      Logger.log(`log 2: ${values}`);
+      checkboxRange.setValues(values);
+      SpreadsheetApp.flush();
+    }
+  }
+}
+
 function taskNameAlert_(alertNumber) {
   const messageNoTask = "B欄のタスクを選択してください";
   const messageTooManyTasks = "B欄のタスクを1つだけ選択してください";
