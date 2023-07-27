@@ -47,6 +47,7 @@ function getTaskTitle() {
 function onEdit(e) {
   const range = e.range;
   const newValue = e.value;
+  const sheet = e.source.getActiveSheet();
 
   if (range.getColumn() === CHECKBOX_RANGE.getColumn() && range.getRow() >= CHECKBOX_RANGE.getRow() 
       && range.getRow() <= CHECKBOX_RANGE.getRow() + CHECKBOX_RANGE.getHeight() - 1) {
@@ -57,10 +58,24 @@ function onEdit(e) {
         return row;
       });
       CHECKBOX_RANGE.setValues(values);
+
+      // Depending on the row that was edited, show or hide the 12th row.
+      if (range.getRow() === 5) {
+        // Unhide row 12 if B5 was checked
+        sheet.showRows(12);
+        sheet.hideRows(9, 3);
+      } else if (range.getRow() === 3 || range.getRow() === 4) {
+        // Hide row 12 if B3 or B4 was checked
+        sheet.hideRows(12);
+        sheet.showRows(9, 3);
+      }
       SpreadsheetApp.flush();
-    }
-  }
+    } else {
+      sheet.showRows(9, 4)
+    } 
+  } 
 }
+
 
 function taskNameAlert_(alertType) {
   const messageNoTask = "B欄のタスクを選択してください";
