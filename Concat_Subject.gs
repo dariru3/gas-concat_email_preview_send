@@ -12,7 +12,7 @@ function concatEmailSubject_() {
   const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([ASSIGN_CELL, DUE_HEADER_CELL, DUE_DATE_CELL]).getRanges().map(range => range.getValues().flat())
   const formattedDate = formatDate_(dueDate);
   
-  if(taskTitle == translateTask || taskTitle == additionalTask) {
+  if((taskTitle == translateTask || taskTitle == additionalTask) && characterCount > 0) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${characterCount}字 ${dueHeader} ${formattedDate}`;
   } else if (taskTitle == layoutCheckTask) {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
@@ -21,7 +21,7 @@ function concatEmailSubject_() {
     subjectLine = taskTitle;
   }
   if(taskTitle == layoutCheckTask && characterCount > 0){
-    taskNameAlert_(3);
+    taskNameAlert_('characters and pages mixed');
   }
   console.log("Subject line:", subjectLine);
   SHEET.getRange(SUBJECT_CELL).setValue(subjectLine);
@@ -29,23 +29,17 @@ function concatEmailSubject_() {
 
 function getTaskTitle() {
   let taskTitle = "";
-  let checkboxCounter = 0;
   for(let i = 0; i < TASK_VALUES.length; i++) {
     console.log(TASK_VALUES[i])
     if(TASK_VALUES[i][1] == true){
-      checkboxCounter += 1;
       taskTitle = TASK_VALUES[i][0]
     }
   }
   if(taskTitle == "") {
   console.error("No task chosen!");
-  taskNameAlert_(1);
+  taskNameAlert_('no task');
   return "エラー: B欄のタスクを選択してください";
-  } else if(checkboxCounter >= 2){
-    console.error("Too many tasks chosen!");
-    taskNameAlert_(2);
-  }
-  else {
+  } else {
     return `${taskTitle}${TASK_FOOTER}`
   }
 }
@@ -53,8 +47,6 @@ function getTaskTitle() {
 function onEdit(e) {
   const range = e.range;
   const newValue = e.value;
-  Logger.log(`newValue: ${newValue}`)
-  Logger.log(`log 1: ${CHECKBOX_RANGE.getValues()}`);
 
   if (range.getColumn() === CHECKBOX_RANGE.getColumn() && range.getRow() >= CHECKBOX_RANGE.getRow() 
       && range.getRow() <= CHECKBOX_RANGE.getRow() + CHECKBOX_RANGE.getHeight() - 1) {
@@ -64,23 +56,19 @@ function onEdit(e) {
         row[0] = i === range.getRow() - CHECKBOX_RANGE.getRow();
         return row;
       });
-      Logger.log(`log 2: ${values}`);
       CHECKBOX_RANGE.setValues(values);
       SpreadsheetApp.flush();
     }
   }
 }
 
-function taskNameAlert_(alertNumber) {
+function taskNameAlert_(alertType) {
   const messageNoTask = "B欄のタスクを選択してください";
-  const messageTooManyTasks = "B欄のタスクを1つだけ選択してください";
   const messageCharCountError = "レイアウトチェックなので文字数を削除してください";
   let message = "";
-  if(alertNumber == 1){
+  if(alertType == 'no task'){
     message = messageNoTask
-  } else if(alertNumber == 2) {
-    message = messageTooManyTasks
-  } else if(alertNumber == 3){
+  } else if(alertType == 'characters and pages mixed'){
     message = messageCharCountError
   } else {
     console.error("taskNameAlert error!")
