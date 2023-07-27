@@ -7,8 +7,9 @@
 function formatHeader_Content_(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
-  const projectType = new Set(["新規（字数）", "既存（字数）", "更新（字数）", "ゲラ（ページ数）"]);
+  const quantityType = new Set(["新規", "既存", "更新", "ゲラ"]);
   const characterCounter = "字";
+  const pageCounter = "ページ数";
 
   let headersContent = "";
   if(removeContent.has(content)){
@@ -17,8 +18,12 @@ function formatHeader_Content_(header, content){
   // format headers according to type
   if(removeHeader.has(header)){
     headersContent += `\n\n${content}`; // adds only "content"
-  } else if(projectType.has(header)){
-    content += characterCounter;
+  } else if(quantityType.has(header)){
+    if(header == "ゲラ") {
+      content += pageCounter;
+    } else {
+      content += characterCounter;
+    }
     headersContent += `\n${header} ${content}`; // adds header+"字" next to content
   } else if(header instanceof Date){
     header = formatDate_(header);
