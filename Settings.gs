@@ -24,6 +24,7 @@ const BODY_VALUE = SHEET.getRange(BODY_CELL).getValue();
 // tasks
 const TASK_FOOTER = SHEET.getRange('A2').getValue();
 const TASK_VALUES = SHEET.getRange('A3:B5').getValues();
+const CHECKBOX_RANGE = sheet.getRange("B3:B5");
 // end of global variables
 
 function test(){
