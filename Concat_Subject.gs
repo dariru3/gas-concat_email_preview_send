@@ -18,6 +18,7 @@ function concatEmailSubject_() {
     subjectLine = `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
   } else {
     console.error("Task title error!")
+    subjectLine = taskTitle;
   }
   if(taskTitle == layoutCheckTask && characterCount > 0){
     taskNameAlert_(3);
@@ -36,16 +37,15 @@ function getTaskTitle() {
       taskTitle = TASK_VALUES[i][0]
     }
   }
-  if(taskTitle == ""){
-    console.error("No task chosen!");
-    taskNameAlert_(1);
-    // return "ERROR"
+  if(taskTitle == "") {
+  console.error("No task chosen!");
+  taskNameAlert_(1);
+  return "エラー: B欄のタスクを選択してください";
   } else if(checkboxCounter >= 2){
     console.error("Too many tasks chosen!");
     taskNameAlert_(2);
-    // return "ERROR"
   }
-   else {
+  else {
     return `${taskTitle}${TASK_FOOTER}`
   }
 }
@@ -53,7 +53,6 @@ function getTaskTitle() {
 function onEdit(e) {
   const range = e.range;
   const newValue = e.value;
-  const sheet = e.source.getActiveSheet();
   Logger.log(`newValue: ${newValue}`)
   Logger.log(`log 1: ${CHECKBOX_RANGE.getValues()}`);
 
