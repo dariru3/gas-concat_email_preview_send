@@ -9,30 +9,33 @@ const SUBJECT = {
  * Function to put together email subject and display preview in spreadsheet.
  */
 function concatEmailSubject_() {
-  const translateTask = "翻訳依頼";
-  const additionalTask = "追つかせ依頼";
-  const layoutCheckTask = "レイアウトチェック依頼"
-  let subjectLine = "";
+  const taskTranslate = "翻訳依頼";
+  const taskAddition = "追つかせ依頼";
+  const taskLayoutCheck = "レイアウトチェック依頼"
+  const errorHeader = "依頼エラー：";
+  const errorNoTaskSelected = "B欄のタスクを選択してください";
+  const errorNoCharNoPageCount = "字数かページ数を入力してくさい";
+  const errorNoPageCount = "ページ数のみを入力してくさい";
   const taskTitle = getTaskTitle();
+  const [characterCount, pageCount] = getCharacterPageCount();
+  let subjectLine = "";
+  subjectLine += errorHeader;
   if(taskTitle == "" || taskTitle === undefined) {
     showAlert_('no task');
-    subjectLine = "エラー： B欄のタスクを選択してください"
-    SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
-    return
-  }
-  const [characterCount, pageCount] = getCharacterPageCount();
-  
-  if((taskTitle == translateTask || taskTitle == additionalTask) && characterCount > 0) {
-    subjectLine = updateSubjectLine(taskTitle, characterCount);
-  } else if (taskTitle == layoutCheckTask && pageCount > 0) {
-    subjectLine = updateSubjectLine(taskTitle, characterCount);
-  } else {
-    subjectLine = `エラー： 字数かページ数を入力してくさい`
+    subjectLine += errorNoTaskSelected;
+  } else if(characterCount > 0 && pageCount > 0) {
+    subjectLine += errorNoCharNoPageCount;
     showAlert_("no characters or pages count")
-  }
-  if(taskTitle == layoutCheckTask && characterCount > 0){
-    subjectLine = `エラー： 字数かページ数を入力してくさい`
-    showAlert_('characters and pages mixed');
+  } else if(taskTitle == taskLayoutCheck && characterCount > 0){
+    subjectLine += errorNoPageCount;
+    showAlert_('character count with layout check mixed');
+  } else if((taskTitle == taskTranslate || taskTitle == taskAddition) && characterCount > 0) {
+    subjectLine = updateSubjectLine(taskTitle, characterCount);
+  } else if(taskTitle == taskLayoutCheck && pageCount > 0) {
+    subjectLine = updateSubjectLine(taskTitle, pageCount);
+  } else {
+    subjectLine = "依頼エラー：不明";
+    showAlert_('unknown task error');
   }
   SHEET.getRange(SUBJECT_CELL).setValue(subjectLine);
 }
@@ -98,16 +101,16 @@ function onEdit(e) {
 }
 
 function showAlert_(alertType) {
-  const messageNoTask = "B欄のタスクを選択してください";
-  const messageCharCountError = "レイアウトチェックなので文字数を削除してください";
-  const messageNoCharPageCount = "字数かページ数を入力してくさい";
+  const messageNoTask = "B欄のタスクを選択してください"; // 'no task'
+  const messageNoCharPageCount = "字数かページ数を入力してくさい"; // 'no characters or pages count'
+  const messageCharCountError = "レイアウトチェックなので文字数を削除してください"; // 'character count with layout check mixed'
   let message = "";
 
   switch(alertType) {
     case 'no task':
       message = messageNoTask;
       break;
-    case 'characters and pages mixed':
+    case 'character count with layout check mixed':
       message = messageCharCountError;
       break;
     case 'no characters or pages count':
