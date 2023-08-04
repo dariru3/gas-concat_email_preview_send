@@ -2,8 +2,10 @@
 // const SUBJECT_VALUE = SHEET.getRange(SUBJECT_CELL).getValue();
 const SUBJECT = {
   cell: "I2",
-  value: SHEET.getRange("I2").getValue()
-}
+  value: function() {
+    return SHEET.getRange("I2").getValue();
+  }
+};
 
 /**
  * Function to put together email subject and display preview in spreadsheet.
@@ -17,10 +19,11 @@ function concatEmailSubject_() {
   const errorNoCharNoPageCount = "字数かページ数を入力してくさい";
   const errorNoPageCount = "ページ数のみを入力してくさい";
   const taskTitle = getTaskTitle();
+  console.log("Task:", taskTitle);
   const [characterCount, pageCount] = getCharacterPageCount();
   let subjectLine = "";
   subjectLine += errorHeader;
-  if(taskTitle == "" || taskTitle === undefined) {
+  if(taskTitle == "依頼" || taskTitle === undefined | taskTitle == "") {
     showAlert_('no task');
     subjectLine += errorNoTaskSelected;
   } else if(characterCount > 0 && pageCount > 0) {
@@ -37,7 +40,7 @@ function concatEmailSubject_() {
     subjectLine = "依頼エラー：不明";
     showAlert_('unknown task error');
   }
-  SHEET.getRange(SUBJECT_CELL).setValue(subjectLine);
+  SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
