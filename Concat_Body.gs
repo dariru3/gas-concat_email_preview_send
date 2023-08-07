@@ -2,7 +2,7 @@
  * Function to put together email body and display preview in spreadsheet.
  */
 function concatEmailBody() {
-  concatEmailSubject_();
+  concatEmailSubject();
   // connect to spreadsheet and values
   const data = SHEET.getDataRange().getValues();
   const lastRow = SHEET.getLastRow();

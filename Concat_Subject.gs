@@ -3,38 +3,41 @@
 const SUBJECT = {
   cell: "I2",
   value: function() {
-    return SHEET.getRange("I2").getValue();
+    return SHEET.getRange(this.cell).getValue();
   }
 };
 
 /**
  * Function to put together email subject and display preview in spreadsheet.
  */
-function concatEmailSubject_() {
-  const taskTranslate = "翻訳依頼";
-  const taskAddition = "追つかせ依頼";
-  const taskLayoutCheck = "レイアウトチェック依頼"
-  const errorHeader = "依頼エラー：";
-  const errorNoTaskSelected = "B欄のタスクを選択してください";
-  const errorNoCharNoPageCount = "字数かページ数を入力してくさい";
-  const errorNoPageCount = "ページ数のみを入力してくさい";
+function concatEmailSubject() {
+  const TASK_TYPES = {
+    TRANSLATE: "翻訳",
+    ADDITION: "追つかせ",
+    LAYOUT_CHECK: "レイアウトチェック"
+  }
+  const ERRORS = {
+    HEADER: "依頼エラー：",
+    NO_TASK: "B欄のタスクを選択してください",
+    NO_COUNT: "字数かページ数を入力してくさい"
+  }
   const taskTitle = getTaskTitle();
   console.log("Task:", taskTitle);
   const [characterCount, pageCount] = getCharacterPageCount();
   let subjectLine = "";
-  subjectLine += errorHeader;
-  if(taskTitle == "依頼" || taskTitle === undefined | taskTitle == "") {
+  subjectLine += ERRORS.HEADER;
+  if(taskTitle === undefined || taskTitle == "") {
     showAlert_('no task');
-    subjectLine += errorNoTaskSelected;
-  } else if(characterCount > 0 && pageCount > 0) {
-    subjectLine += errorNoCharNoPageCount;
-    showAlert_("no characters or pages count")
-  } else if(taskTitle == taskLayoutCheck && characterCount > 0){
-    subjectLine += errorNoPageCount;
-    showAlert_('character count with layout check mixed');
-  } else if((taskTitle == taskTranslate || taskTitle == taskAddition) && characterCount > 0) {
+    subjectLine += ERRORS.NO_TASK;
+  } else if(characterCount == 0 && pageCount == 0) {
+    subjectLine += ERRORS.NO_COUNT;
+    showAlert_('no characters or pages count')
+  // } else if((taskTitle == TASK_TYPES.LAYOUT_CHECK && characterCount > 0) || (taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && pageCount > 0){
+  //   subjectLine += ERRORS.NO_COUNT;
+  //   showAlert_('no characters or pages count');
+  } else if((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
-  } else if(taskTitle == taskLayoutCheck && pageCount > 0) {
+  } else if(taskTitle == TASK_TYPES.LAYOUT_CHECK && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else {
     subjectLine = "依頼エラー：不明";
@@ -44,23 +47,36 @@ function concatEmailSubject_() {
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
+  const clientCell = 'F3';
   const fileAndSectionNamesCell = 'F4';
   const dueDateCell = 'F6';
   const dueHeaderCell = 'E6'; // '〆切'
+  const characterCounter = "字";
+  const pageCounter = "ページ数";
+  const taskFooter = "依頼";
   const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([fileAndSectionNamesCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
-
-  const clientCell = 'F3';
   const clientName = checkForSama(clientCell);
   const formattedDate = formatDate_(dueDate);
-  if(characterCount == 0){
-    return `【${clientName}】 ${assignTitle} ${taskTitle} ${dueHeader} ${formattedDate}`;
-  } else {
-    return `【${clientName}】 ${assignTitle} ${taskTitle} ${characterCount}字 ${dueHeader} ${formattedDate}`;
+
+  let counterType = "";
+
+  switch(taskTitle) {
+    case "翻訳":
+    case "追つかせ":
+      counterType = characterCounter;
+      break;
+    case "レイアウトチェック":
+      counterType = pageCounter;
+      break;
+    default:
+      return "依頼エラー：不明";
   }
+
+  const count = characterCount > 0 ? `${characterCount}${counterType}` : "";
+  return `【${clientName}】 ${assignTitle} ${taskTitle}${taskFooter} ${count} ${dueHeader} ${formattedDate}`;
 }
 
 function getTaskTitle() {
-  const taskFooter = SHEET.getRange('A2').getValue(); // "依頼"
   const taskValues = SHEET.getRange('A3:B5').getValues();
   let taskTitle = "";
   for(let i = 0; i < taskValues.length; i++) {
@@ -69,7 +85,7 @@ function getTaskTitle() {
       taskTitle = taskValues[i][0]
     }
   }
-  return `${taskTitle}${taskFooter}`
+  return `${taskTitle}`
 }
 
 function onEdit(e) {
