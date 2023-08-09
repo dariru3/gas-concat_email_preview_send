@@ -1,28 +1,39 @@
 /**
  * Function to send email.
  */
-function sendEmail(){
-  const myName = getNameFromEmailAddress_(MY_EMAIL, 'B');
+function prepareEmail(emailParam){
+  const emailNameCol = 'B'
+  const myName = getNameFromEmailAddress_(MY_EMAIL, emailNameCol);
+
   if(checkMyNameExists_(myName) == false){
     return;
   }
-  const subject = SHEET.getRange("G2").getValue();
-  const body = SHEET.getRange("G3").getValue();
-  const toAddresses = getEmailAddress_().toAddresses.join();
-  const ccAddresses = getEmailAddress_().ccAddresses.join();
-  console.log("Send emails to:", toAddresses, ccAddresses);
+
+  const {toAddresses, ccAddresses} = getEmailAddress_();
+  // console.log("Send emails to:", toAddresses, ccAddresses);
   const options = {
-    cc: ccAddresses,
+    cc: ccAddresses.join(),
     name: myName
   }
 
   try {
-    GmailApp.sendEmail(toAddresses, subject, body, options)
-    console.log("Success: email sent");
+    sendEmail_(emailParam, toAddresses, options);
+  } catch (e) {
+    console.error("Email error:", e);
+  }
+}
+
+function sendEmail_(emailParam, toAddresses, options) {
+  if(emailParam == "immediate") {
+    GmailApp.sendEmail(toAddresses, SUBJECT_VALUE, BODY_VALUE, options)
+    // console.log("Success: email sent");
     emailStatusToast_("sent");
   }
-  catch(e){
-    throw "Email error:", e
+
+  if(emailParam == "draft") {
+    GmailApp.createDraft(toAddresses, SUBJECT_VALUE, BODY_VALUE, options)
+    // console.log("Success: draft created");
+    emailStatusToast_("draft");
   }
 }
 

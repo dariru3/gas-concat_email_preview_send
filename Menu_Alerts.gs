@@ -5,26 +5,33 @@ const UI = SpreadsheetApp.getUi();
 function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
-      .addItem('メール送信', 'showEmailAlerts_')
+      .addItem('メール送信', 'emailAlertsHandler_')
+      .addItem('下書きメールの作成', 'draftsAlertsHandler_')
       .addToUi();
 }
 
-function showEmailAlerts_() {
+function emailAlertsHandler_() {
+  showEmailAlerts_('メールを送信して良いですか？', 'sending', 'immediate');
+}
+
+function draftsAlertsHandler_() {
+  showEmailAlerts_('メール原稿の作成して良いですか？', 'drafting', 'draft');
+}
+
+function showEmailAlerts_(emailAlertMessage, emailStatusMessage, emailParam) {
   const boxAlert = UI.alert(
      '相手が開けるBOXリンクですか',
      'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
       UI.ButtonSet.YES_NO);
 
   if (boxAlert == UI.Button.YES) {
-    const emailAlert = UI.alert(
-      'メールを送信してよいですか？',
-      UI.ButtonSet.YES_NO);
+    const emailAlert = UI.alert(emailAlertMessage, UI.ButtonSet.YES_NO);
     if (emailAlert == UI.Button.YES) {
-      emailStatusToast_("sending");
-      sendEmail();
+      emailStatusToast_(emailStatusMessage);
+      prepareEmail(emailParam);
     } else { // emailAlert == NO
-      UI.alert('メール配信を中止しました');
-      console.warn("Email cancelled");
+      UI.alert('中止しました');
+      console.warn("Email action cancelled");
     }
   } else { // boxAlert == NO
     UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
@@ -57,6 +64,12 @@ function emailStatusToast_(status) {
       break;
     case "cancel":
       message = "メール配信を中止しました";
+      break;
+    case "drafting":
+      message = "下書きメールの作成中";
+      break;
+    case "draft":
+      message = "下書きメールが作成されました。下書きボックスを確認してください。";
       break;
     default:
       console.error("Toast message error!")

@@ -7,27 +7,33 @@
 function formatHeader_Content_(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
-  const projectType = new Set(["新規", "既存", "更新"]);
+  const quantityType = new Set(["新規", "既存", "更新", "ゲラ"]);
   const characterCounter = "字";
+  const pageCounter = "ページ数";
+  const TASK_TYPES = {
+    TRANSLATE: "翻訳",
+    ADDITION: "追つかせ",
+    LAYOUT_CHECK: "レイアウトチェック"
+  }
+  const taskType = getTaskTitle();
 
-  let headersContent = "";
   if(removeContent.has(content)){
     content = "";
   }
-  // format headers according to type
+
   if(removeHeader.has(header)){
-    headersContent += `\n\n${content}`; // adds only "content"
-  } else if(projectType.has(header)){
-    content += characterCounter;
-    headersContent += `\n${header} ${content}`; // adds header+"字" next to content
+    return `\n\n${content}`;
+  } else if(quantityType.has(header)) {
+    if((taskType == TASK_TYPES.LAYOUT_CHECK && header != "ゲラ") || (taskType != TASK_TYPES.LAYOUT_CHECK && header == "ゲラ")) {
+      return "";
+    } 
+    content += (header == "ゲラ") ? pageCounter : characterCounter;
+    return `\n${header} ${content}`;
   } else if(header instanceof Date){
-    header = formatDate_(header);
-    headersContent += `\n${header} ${content}`; // adds header(date) next to content
+    return `\n${formatDate_(header)} ${content}`;
   } else {
-    headersContent += `\n\n${header}\n${content}`; // default: header over content
+    return `\n\n${header}\n${content}`; // default: header over content
   }
-  console.log("Headers and content:", headersContent);
-  return headersContent
 }
 
 /**
