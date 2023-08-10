@@ -25,13 +25,13 @@ function prepareEmail(emailParam){
 
 function sendEmail_(emailParam, toAddresses, options) {
   if(emailParam == "immediate") {
-    GmailApp.sendEmail(toAddresses, SUBJECT.value, BODY.value, options)
+    GmailApp.sendEmail(toAddresses, SUBJECT.value(), BODY.value(), options)
     // console.log("Success: email sent");
     emailStatusToast_("sent");
   }
 
   if(emailParam == "draft") {
-    GmailApp.createDraft(toAddresses, SUBJECT.value, BODY.value, options)
+    GmailApp.createDraft(toAddresses, SUBJECT.value(), BODY.value(), options)
     // console.log("Success: draft created");
     emailStatusToast_("draft");
   }
