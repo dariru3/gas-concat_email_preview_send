@@ -31,6 +31,6 @@ const SUBJECT = {
     HEADER: "依頼エラー：",
     NO_TASK: "B欄のタスクを選択してください",
     NO_COUNT: "字数かページ数を入力してくさい",
-    UNKNOWN_ERR: "件名エラー：不明"
+    UNKNOWN_ERR: "不明"
   }
 // end of global variables
