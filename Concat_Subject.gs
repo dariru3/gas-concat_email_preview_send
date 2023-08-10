@@ -10,8 +10,6 @@ function concatEmailSubject() {
 
   if(taskTitle === undefined || taskTitle == "") {
     errorMessage = ERRORS.NO_TASK;
-  } else if(characterCount == 0 && pageCount == 0) {
-    errorMessage = ERRORS.NO_COUNT;
   } else if(isValidCountError(taskTitle, characterCount, pageCount)) {
     errorMessage = ERRORS.NO_COUNT;
   } else if((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && characterCount > 0) {
@@ -31,7 +29,9 @@ function concatEmailSubject() {
 }
 
 function isValidCountError(taskTitle, characterCount, pageCount) {
-  return ((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && pageCount > 0) || (taskTitle == TASK_TYPES.LAYOUT_CHECK && characterCount > 0)
+  return (characterCount == 0 && pageCount == 0) ||
+         ((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && pageCount > 0) ||
+         (taskTitle == TASK_TYPES.LAYOUT_CHECK && characterCount > 0);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
