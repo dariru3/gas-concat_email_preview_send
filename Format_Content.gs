@@ -10,11 +10,6 @@ function formatHeader_Content_(header, content){
   const quantityType = new Set(["新規", "既存", "更新", "ゲラ"]);
   const characterCounter = "字";
   const pageCounter = "ページ数";
-  const TASK_TYPES = {
-    TRANSLATE: "翻訳",
-    ADDITION: "追つかせ",
-    LAYOUT_CHECK: "レイアウトチェック"
-  }
   const taskType = getTaskTitle();
 
   if(removeContent.has(content)){

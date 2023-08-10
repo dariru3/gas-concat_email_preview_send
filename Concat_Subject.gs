@@ -2,11 +2,6 @@
  * Function to put together email subject and display preview in spreadsheet.
  */
 function concatEmailSubject() {
-  const TASK_TYPES = {
-    TRANSLATE: "翻訳",
-    ADDITION: "追つかせ",
-    LAYOUT_CHECK: "レイアウトチェック"
-  }
   const ERRORS = {
     HEADER: "依頼エラー：",
     NO_TASK: "B欄のタスクを選択してください",
@@ -23,9 +18,6 @@ function concatEmailSubject() {
   } else if(characterCount == 0 && pageCount == 0) {
     subjectLine += ERRORS.NO_COUNT;
     showAlert_('no characters or pages count')
-  // } else if((taskTitle == TASK_TYPES.LAYOUT_CHECK && characterCount > 0) || (taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && pageCount > 0){
-  //   subjectLine += ERRORS.NO_COUNT;
-  //   showAlert_('no characters or pages count');
   } else if((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
   } else if(taskTitle == TASK_TYPES.LAYOUT_CHECK && pageCount > 0) {
