@@ -22,5 +22,5 @@ function concatEmailBody() {
   emailBody += `\n\n${closingGreeting}`;
 
   console.log("Email body:", emailBody);
-  SHEET.getRange(BODY_CELL).setValue(emailBody);
+  SHEET.getRange(BODY.cell).setValue(emailBody);
 }
