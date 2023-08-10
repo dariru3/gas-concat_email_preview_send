@@ -5,7 +5,8 @@ function concatEmailSubject() {
   const ERRORS = {
     HEADER: "依頼エラー：",
     NO_TASK: "B欄のタスクを選択してください",
-    NO_COUNT: "字数かページ数を入力してくさい"
+    NO_COUNT: "字数かページ数を入力してくさい",
+    UNKNOWN_ERR: "件名エラー：不明"
   }
   const taskTitle = getTaskTitle();
   console.log("Task:", taskTitle);
@@ -23,7 +24,7 @@ function concatEmailSubject() {
   } else if(taskTitle == TASK_TYPES.LAYOUT_CHECK && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else {
-    subjectLine = "依頼エラー：不明";
+    subjectLine = ERRORS.UNKNOWN_ERR;
     showAlert_('unknown task error');
   }
   SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
@@ -34,13 +35,19 @@ function updateSubjectLine(taskTitle, characterCount) {
   const fileAndSectionNamesCell = 'F4';
   const dueDateCell = 'F6';
   const dueHeaderCell = 'E6'; // '〆切'
-  const characterCounter = "字";
-  const pageCounter = "ページ数";
   const taskFooter = "依頼";
   const [assignTitle, dueHeader, dueDate] = SHEET.getRangeList([fileAndSectionNamesCell, dueHeaderCell, dueDateCell]).getRanges().map(range => range.getValues().flat())
   const clientName = checkForSama(clientCell);
   const formattedDate = formatDate_(dueDate);
+  const counterType = checkCounterType(taskTitle);
 
+  const count = characterCount > 0 ? `${characterCount}${counterType}` : "";
+  return `【${clientName}】 ${assignTitle} ${taskTitle}${taskFooter} ${count} ${dueHeader} ${formattedDate}`;
+}
+
+function checkCounterType(taskTitle) {
+  const characterCounter = "字";
+  const pageCounter = "ページ数";
   let counterType = "";
 
   switch(taskTitle) {
@@ -52,11 +59,10 @@ function updateSubjectLine(taskTitle, characterCount) {
       counterType = pageCounter;
       break;
     default:
-      return "依頼エラー：不明";
+      counterType = "依頼エラー：不明";
   }
 
-  const count = characterCount > 0 ? `${characterCount}${counterType}` : "";
-  return `【${clientName}】 ${assignTitle} ${taskTitle}${taskFooter} ${count} ${dueHeader} ${formattedDate}`;
+  return counterType
 }
 
 function getTaskTitle() {
