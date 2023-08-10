@@ -41,7 +41,9 @@ function checkMyNameExists_(name){
   let myNameExists = true
   const myPreferredName = getNameFromEmailAddress_(MY_EMAIL);
   if(!name || !myPreferredName){ // checks if `name` and `myPreferredName` are not (!) "undefined" or blank
-    undefinedNameAlert_()
+    const undefinedAlertOptions = new AlertOptions("undefined");
+    showAlert(undefinedAlertOptions);
+    // undefinedNameAlert_()
     emailStatusToast_("cancel")
     console.warn("Cancelled at myName alert");
     myNameExists = false

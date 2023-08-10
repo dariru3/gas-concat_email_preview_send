@@ -1,7 +1,3 @@
-// global ui variable
-const UI = SpreadsheetApp.getUi();
-// end of global ui variable
-
 function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
@@ -10,15 +6,74 @@ function onOpen() {
       .addToUi();
 }
 
+class AlertOptions {
+  constructor(type, message, status, emailParam) {
+    this.type = type;
+    this.message = message;
+    this.status = status;
+    this.emailParam = emailParam
+  }
+}
+
 function emailAlertsHandler_() {
-  showEmailAlerts_('メールを送信して良いですか？', 'sending', 'immediate');
+  const options = new AlertOptions(
+    "email", 
+    "メールを送信して良いですか？",
+    'sending',
+    'immediate'
+  );
+  showAlert(options);
+  // showEmailAlerts_('メールを送信して良いですか？', 'sending', 'immediate');
 }
 
 function draftsAlertsHandler_() {
-  showEmailAlerts_('メール原稿の作成して良いですか？', 'drafting', 'draft');
+  const options = new AlertOptions(
+    "email",
+    "メール原稿の作成して良いですか？",
+    "drafting",
+    "draft"
+  );
+  showAlert(options);
+  // showEmailAlerts_('メール原稿の作成して良いですか？', 'drafting', 'draft');
+}
+
+function showAlert(options) {
+  const UI = SpreadsheetApp.getUi();
+  if(options.type == "email") {
+    const boxAlert = UI.alert(
+      '相手が開けるBOXリンクですか',
+      'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
+       UI.ButtonSet.YES_NO);
+ 
+   if (boxAlert == UI.Button.YES) {
+     const emailAlert = UI.alert(options.message, UI.ButtonSet.YES_NO);
+     if (emailAlert == UI.Button.YES) {
+       emailStatusToast_(options.status);
+       prepareEmail(options.emailParam);
+     } else { // emailAlert == NO
+       UI.alert('中止しました');
+       console.warn("Email action cancelled");
+     }
+   } else { // boxAlert == NO
+     UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
+     console.warn("Cancelled at Box alert");
+   }
+  } else if(options.type == "undefined") {
+    UI.alert(
+      'あなたの名前が見つかりませんでした。',
+      '「メールリスト」のシートの、A～C列に入力してください',
+      UI.ButtonSet.OK
+    );
+  } else if(options.type == "message") {
+    UI.alert(
+      options.message,
+      UI.ButtonSet.OK
+    );
+  }
 }
 
 function showEmailAlerts_(emailAlertMessage, emailStatusMessage, emailParam) {
+  const UI = SpreadsheetApp.getUi();
   const boxAlert = UI.alert(
      '相手が開けるBOXリンクですか',
      'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',

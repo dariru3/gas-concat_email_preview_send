@@ -9,7 +9,8 @@ function concatEmailSubject() {
   subjectLine += ERRORS.HEADER;
   if(taskTitle === undefined || taskTitle == "") {
     subjectLine += ERRORS.NO_TASK;
-    showAlert_(ERRORS.NO_TASK);
+    showAlert(options = { type: "message", message: ERRORS.NO_TASK });
+    // showAlert_(ERRORS.NO_TASK);
   } else if(characterCount == 0 && pageCount == 0) {
     subjectLine += ERRORS.NO_COUNT;
     showAlert_(ERRORS.NO_COUNT)
