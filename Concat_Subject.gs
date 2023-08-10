@@ -2,30 +2,24 @@
  * Function to put together email subject and display preview in spreadsheet.
  */
 function concatEmailSubject() {
-  const ERRORS = {
-    HEADER: "依頼エラー：",
-    NO_TASK: "B欄のタスクを選択してください",
-    NO_COUNT: "字数かページ数を入力してくさい",
-    UNKNOWN_ERR: "件名エラー：不明"
-  }
   const taskTitle = getTaskTitle();
   console.log("Task:", taskTitle);
   const [characterCount, pageCount] = getCharacterPageCount();
   let subjectLine = "";
   subjectLine += ERRORS.HEADER;
   if(taskTitle === undefined || taskTitle == "") {
-    showAlert_('no task');
     subjectLine += ERRORS.NO_TASK;
+    showAlert_(ERRORS.NO_TASK);
   } else if(characterCount == 0 && pageCount == 0) {
     subjectLine += ERRORS.NO_COUNT;
-    showAlert_('no characters or pages count')
+    showAlert_(ERRORS.NO_COUNT)
   } else if((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
   } else if(taskTitle == TASK_TYPES.LAYOUT_CHECK && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else {
     subjectLine = ERRORS.UNKNOWN_ERR;
-    showAlert_('unknown task error');
+    showAlert_(ERRORS.UNKNOWN_ERR);
   }
   SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
 }
@@ -108,26 +102,7 @@ function onEdit(e) {
   } 
 }
 
-function showAlert_(alertType) {
-  const messageNoTask = "B欄のタスクを選択してください"; // 'no task'
-  const messageNoCharPageCount = "字数かページ数を入力してくさい"; // 'no characters or pages count'
-  const messageCharCountError = "レイアウトチェックなので文字数を削除してください"; // 'character count with layout check mixed'
-  let message = "";
-
-  switch(alertType) {
-    case 'no task':
-      message = messageNoTask;
-      break;
-    case 'character count with layout check mixed':
-      message = messageCharCountError;
-      break;
-    case 'no characters or pages count':
-      message = messageNoCharPageCount;
-      break;
-    default:
-      message = "不明なエラー"
-  }
-
+function showAlert_(message) {
   UI.alert(
     message,
     UI.ButtonSet.OK
