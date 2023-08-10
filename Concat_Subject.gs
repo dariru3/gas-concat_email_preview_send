@@ -9,18 +9,23 @@ function concatEmailSubject() {
   subjectLine += ERRORS.HEADER;
   if(taskTitle === undefined || taskTitle == "") {
     subjectLine += ERRORS.NO_TASK;
-    showAlert(options = { type: "message", message: ERRORS.NO_TASK });
+    showAlert({ type: "message", message: ERRORS.NO_TASK });
     // showAlert_(ERRORS.NO_TASK);
   } else if(characterCount == 0 && pageCount == 0) {
     subjectLine += ERRORS.NO_COUNT;
-    showAlert_(ERRORS.NO_COUNT)
+    showAlert({ type: "message", message: ERRORS.NO_COUNT });    
+    // showAlert_(ERRORS.NO_COUNT)
+  } else if(((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && pageCount > 0) || (taskTitle == TASK_TYPES.LAYOUT_CHECK && characterCount > 0)) {
+    subjectLine += ERRORS.NO_COUNT;
+    showAlert({ type: "message", message: ERRORS.NO_COUNT });
   } else if((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
   } else if(taskTitle == TASK_TYPES.LAYOUT_CHECK && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else {
     subjectLine = ERRORS.UNKNOWN_ERR;
-    showAlert_(ERRORS.UNKNOWN_ERR);
+    showAlert({ type: "message", message: ERRORS.UNKNOWN_ERR });
+    // showAlert_(ERRORS.UNKNOWN_ERR);
   }
   SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
 }
