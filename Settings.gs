@@ -7,8 +7,17 @@ const START_ROW = 6; // spreadsheet row 7
 const HEADER_COL = 4; // column C
 const CONTENT_COL = 5; // column D
 
-// email body
-const BODY_CELL = "I3"
-const BODY_VALUE = SHEET.getRange(BODY_CELL).getValue();
+const BODY = {
+    cell: "I3",
+    value: function() {
+        return SHEET.getRange(this.cell).getValue();
+    }
+}
 
+const SUBJECT = {
+    cell: "I2",
+    value: function() {
+      return SHEET.getRange(this.cell).getValue();
+    }
+  };
 // end of global variables

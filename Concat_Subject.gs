@@ -1,12 +1,3 @@
-// const SUBJECT_CELL = "I2"
-// const SUBJECT_VALUE = SHEET.getRange(SUBJECT_CELL).getValue();
-const SUBJECT = {
-  cell: "I2",
-  value: function() {
-    return SHEET.getRange(this.cell).getValue();
-  }
-};
-
 /**
  * Function to put together email subject and display preview in spreadsheet.
  */
