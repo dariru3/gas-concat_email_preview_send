@@ -8,13 +8,16 @@ function concatEmailSubject() {
   let subjectLine = ERRORS.HEADER;
   let errorMessage = null;
 
-  if(taskTitle === undefined || taskTitle == "") {
+  const isTranslateOrAdditionTask = taskTitle === TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION;
+  const isLayoutCheck = taskTitle === TASK_TYPES.LAYOUT_CHECK;
+
+  if(taskTitle === undefined || taskTitle === "") {
     errorMessage = ERRORS.NO_TASK;
   } else if(isValidCountError(taskTitle, characterCount, pageCount)) {
     errorMessage = ERRORS.NO_COUNT;
-  } else if((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && characterCount > 0) {
+  } else if(isTranslateOrAdditionTask && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
-  } else if(taskTitle == TASK_TYPES.LAYOUT_CHECK && pageCount > 0) {
+  } else if(isLayoutCheck && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else {
     errorMessage = ERRORS.UNKNOWN_ERR;
