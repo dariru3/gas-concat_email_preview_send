@@ -2,6 +2,13 @@
 const SHEET = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("テンプレート");
 const MY_EMAIL = Session.getActiveUser().getEmail();
 
+const BODY = {
+  cell: "I3",
+  value: function() {
+      return SHEET.getRange(this.cell).getValue();
+  }
+}
+
 const SUBJECT = {
     cell: "I2",
     value: function() {

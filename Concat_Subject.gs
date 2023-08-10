@@ -10,22 +10,22 @@ const ERRORS = {
  */
 function concatEmailSubject() {
   const taskTitle = getTaskTitle();
+  const isTranslateOrAdditionTask = TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION;
+  const isLayoutCheck = TASK_TYPES.LAYOUT_CHECK;
+
   const [characterCount, pageCount] = getCharacterPageCount();
 
   let subjectLine = ERRORS.HEADER;
   let errorMessage = null;
 
-  const isTranslateOrAdditionTask = taskTitle === TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION;
-  const isLayoutCheck = taskTitle === TASK_TYPES.LAYOUT_CHECK;
-
   if(taskTitle === undefined || taskTitle === "") {
     errorMessage = ERRORS.NO_TASK;
-  } else if(isValidCountError(characterCount, pageCount)) {
-    errorMessage = ERRORS.NO_COUNT;
   } else if(isTranslateOrAdditionTask && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
   } else if(isLayoutCheck && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
+  } else if(isValidCountError(characterCount, pageCount)) {
+    errorMessage = ERRORS.NO_COUNT;
   } else {
     errorMessage = ERRORS.UNKNOWN_ERR;
   }
@@ -40,8 +40,8 @@ function concatEmailSubject() {
 
 function isValidCountError(characterCount, pageCount) {
   return (characterCount == 0 && pageCount == 0) ||
-         (isTranslateOrAdditionTask && pageCount > 0) ||
-         (isLayoutCheck && characterCount > 0);
+         ((TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION) && pageCount > 0) ||
+         (TASK_TYPES.LAYOUT_CHECK && characterCount > 0);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {

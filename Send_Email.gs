@@ -23,13 +23,6 @@ function prepareEmail(emailParam){
 }
 
 function sendEmail_(emailParam, toAddresses, options) {
-  const BODY = {
-    cell: "I3",
-    value: function() {
-        return SHEET.getRange(this.cell).getValue();
-    }
-  }
-
   if(emailParam == "immediate") {
     GmailApp.sendEmail(toAddresses, SUBJECT.value(), BODY.value(), options)
     emailStatusToast_("sent");
