@@ -1,3 +1,5 @@
+const UI = SpreadsheetApp.getUi();
+
 function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
@@ -36,7 +38,6 @@ function draftsAlertsHandler_() {
 }
 
 function showAlert(options) {
-  const UI = SpreadsheetApp.getUi();
   if(options.type == "email") {
     const boxAlert = UI.alert(
       '相手が開けるBOXリンクですか',
