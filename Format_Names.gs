@@ -9,7 +9,6 @@ function concatNames_() {
   const toNames = addSanToNames_(toAddresses);
   const ccNames = addSanToNames_(ccAddresses);
   
-  console.log("All names:", toNames, ccNames);
   return { toNames: toNames,ccNames: ccNames }
 }
 
@@ -26,6 +25,6 @@ function addSanToNames_(list){
       namesPlusSanString += `${preferredName}さん、`;
     }
   }
-  console.log("Names with -san:", namesPlusSanString);
+  
   return namesPlusSanString
 }

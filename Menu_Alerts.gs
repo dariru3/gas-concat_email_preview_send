@@ -23,7 +23,6 @@ function emailAlertsHandler_() {
     'immediate'
   );
   showAlert(options);
-  // showEmailAlerts_('メールを送信して良いですか？', 'sending', 'immediate');
 }
 
 function draftsAlertsHandler_() {
@@ -34,7 +33,6 @@ function draftsAlertsHandler_() {
     "draft"
   );
   showAlert(options);
-  // showEmailAlerts_('メール原稿の作成して良いですか？', 'drafting', 'draft');
 }
 
 function showAlert(options) {
@@ -52,11 +50,9 @@ function showAlert(options) {
        prepareEmail(options.emailParam);
      } else { // emailAlert == NO
        UI.alert('中止しました');
-       console.warn("Email action cancelled");
      }
    } else { // boxAlert == NO
      UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
-     console.warn("Cancelled at Box alert");
    }
   } else if(options.type == "undefined") {
     UI.alert(
@@ -70,43 +66,6 @@ function showAlert(options) {
       UI.ButtonSet.OK
     );
   }
-}
-
-function showEmailAlerts_(emailAlertMessage, emailStatusMessage, emailParam) {
-  const UI = SpreadsheetApp.getUi();
-  const boxAlert = UI.alert(
-     '相手が開けるBOXリンクですか',
-     'プロジェクトフォルダのリンクになっていませんか？\n共有フォルダの権限は「リンクを知っている全員」に設定されていますか？',
-      UI.ButtonSet.YES_NO);
-
-  if (boxAlert == UI.Button.YES) {
-    const emailAlert = UI.alert(emailAlertMessage, UI.ButtonSet.YES_NO);
-    if (emailAlert == UI.Button.YES) {
-      emailStatusToast_(emailStatusMessage);
-      prepareEmail(emailParam);
-    } else { // emailAlert == NO
-      UI.alert('中止しました');
-      console.warn("Email action cancelled");
-    }
-  } else { // boxAlert == NO
-    UI.alert('BoxフォルダのURL/アクセス権限を変更してください');
-    console.warn("Cancelled at Box alert");
-  }
-}
-
-function undefinedNameAlert_() {
-  UI.alert(
-    'あなたの名前が見つかりませんでした。',
-    '「メールリスト」のシートの、A～C列に入力してください',
-    UI.ButtonSet.OK
-  );
-}
-
-function showAlert_(message) {
-  UI.alert(
-    message,
-    UI.ButtonSet.OK
-  );
 }
 
 /**

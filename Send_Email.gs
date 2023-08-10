@@ -10,7 +10,6 @@ function prepareEmail(emailParam){
   }
 
   const {toAddresses, ccAddresses} = getEmailAddress_();
-  // console.log("Send emails to:", toAddresses, ccAddresses);
   const options = {
     cc: ccAddresses.join(),
     name: myName
@@ -24,15 +23,20 @@ function prepareEmail(emailParam){
 }
 
 function sendEmail_(emailParam, toAddresses, options) {
+  const BODY = {
+    cell: "I3",
+    value: function() {
+        return SHEET.getRange(this.cell).getValue();
+    }
+  }
+
   if(emailParam == "immediate") {
     GmailApp.sendEmail(toAddresses, SUBJECT.value(), BODY.value(), options)
-    // console.log("Success: email sent");
     emailStatusToast_("sent");
   }
 
   if(emailParam == "draft") {
     GmailApp.createDraft(toAddresses, SUBJECT.value(), BODY.value(), options)
-    // console.log("Success: draft created");
     emailStatusToast_("draft");
   }
 }
@@ -41,11 +45,8 @@ function checkMyNameExists_(name){
   let myNameExists = true
   const myPreferredName = getNameFromEmailAddress_(MY_EMAIL);
   if(!name || !myPreferredName){ // checks if `name` and `myPreferredName` are not (!) "undefined" or blank
-    const undefinedAlertOptions = new AlertOptions("undefined");
-    showAlert(undefinedAlertOptions);
-    // undefinedNameAlert_()
+    showAlert({ type: "undefined" });
     emailStatusToast_("cancel")
-    console.warn("Cancelled at myName alert");
     myNameExists = false
   }
   return myNameExists

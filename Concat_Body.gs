@@ -2,10 +2,12 @@
  * Function to put together email body and display preview in spreadsheet.
  */
 function concatEmailBody() {
-  concatEmailSubject();
-  // connect to spreadsheet and values
+  const START_ROW = 6; // spreadsheet row 7
+  const HEADER_COL = 4; // column C
+  const CONTENT_COL = 5; // column D
   const data = SHEET.getDataRange().getValues();
   const lastRow = SHEET.getLastRow();
+  concatEmailSubject();
 
   const openingGreeting = getDefaultGreeting_().openingGreeting;
   const closingGreeting = getDefaultGreeting_().closingGreeting;
@@ -21,6 +23,5 @@ function concatEmailBody() {
   }
   emailBody += `\n\n${closingGreeting}`;
 
-  console.log("Email body:", emailBody);
   SHEET.getRange(BODY.cell).setValue(emailBody);
 }

@@ -13,6 +13,6 @@ function getDefaultGreeting_(){
   opening += `\n\nお疲れ様です。${myName}です。`;
 
   const closing = `何卒よろしくお願いいたします。\n\n${myName}`;
-  console.log("Greetings:", opening, closing);
+
   return { openingGreeting: opening, closingGreeting: closing }
 }

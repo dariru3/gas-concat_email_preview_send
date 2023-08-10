@@ -1,3 +1,10 @@
+const ERRORS = {
+  HEADER: "依頼エラー：",
+  NO_TASK: "B欄のタスクを選択してください",
+  NO_COUNT: "字数かページ数を入力してくさい",
+  UNKNOWN_ERR: "不明"
+}
+
 /**
  * Function to put together email subject and display preview in spreadsheet.
  */
@@ -13,7 +20,7 @@ function concatEmailSubject() {
 
   if(taskTitle === undefined || taskTitle === "") {
     errorMessage = ERRORS.NO_TASK;
-  } else if(isValidCountError(taskTitle, characterCount, pageCount)) {
+  } else if(isValidCountError(characterCount, pageCount)) {
     errorMessage = ERRORS.NO_COUNT;
   } else if(isTranslateOrAdditionTask && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
@@ -31,10 +38,10 @@ function concatEmailSubject() {
   SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
 }
 
-function isValidCountError(taskTitle, characterCount, pageCount) {
+function isValidCountError(characterCount, pageCount) {
   return (characterCount == 0 && pageCount == 0) ||
-         ((taskTitle == TASK_TYPES.TRANSLATE || taskTitle == TASK_TYPES.ADDITION) && pageCount > 0) ||
-         (taskTitle == TASK_TYPES.LAYOUT_CHECK && characterCount > 0);
+         (isTranslateOrAdditionTask && pageCount > 0) ||
+         (isLayoutCheck && characterCount > 0);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
@@ -58,15 +65,15 @@ function checkCounterType(taskTitle) {
   let counterType = "";
 
   switch(taskTitle) {
-    case "翻訳":
-    case "追つかせ":
+    case TASK_TYPES.TRANSLATE:
+    case TASK_TYPES.ADDITION:
       counterType = characterCounter;
       break;
-    case "レイアウトチェック":
+    case TASK_TYPES.LAYOUT_CHECK:
       counterType = pageCounter;
       break;
     default:
-      counterType = "依頼エラー：不明";
+      counterType = ERRORS.UNKNOWN_ERR;
   }
 
   return counterType
