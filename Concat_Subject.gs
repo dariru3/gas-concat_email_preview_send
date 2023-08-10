@@ -102,14 +102,6 @@ function onEdit(e) {
   } 
 }
 
-function showAlert_(message) {
-  UI.alert(
-    message,
-    UI.ButtonSet.OK
-  );
-}
-
-
 function getCharacterPageCount() {
   const charCountValues = SHEET.getRange('F9:F10').getValues();
   const pageCountValue = SHEET.getRange('F12').getValue();

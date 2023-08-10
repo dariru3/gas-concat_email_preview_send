@@ -47,6 +47,13 @@ function undefinedNameAlert_() {
   );
 }
 
+function showAlert_(message) {
+  UI.alert(
+    message,
+    UI.ButtonSet.OK
+  );
+}
+
 /**
  * Helper function to send out toast message on email status
  * @param {string} status "Sending" or "Sent"
