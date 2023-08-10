@@ -2,7 +2,7 @@ function onOpen() {
   UI.createMenu('GASメール')
       .addItem('メールプレビュー', 'concatEmailBody')
       .addItem('メール送信', 'emailAlertsHandler_')
-      .addItem('下書きメールの作成', 'draftsAlertsHandler_')
+      .addItem('Gmail 下書きへ', 'draftsAlertsHandler_')
       .addToUi();
 }
 
