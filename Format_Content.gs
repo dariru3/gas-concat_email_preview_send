@@ -19,7 +19,7 @@ function formatHeader_Content_(header, content){
   if(removeHeader.has(header)){
     return `\n\n${content}`;
   } else if(quantityType.has(header)) {
-    if((taskType == TASK_TYPES.LAYOUT_CHECK && header != "ゲラ") || (taskType != TASK_TYPES.LAYOUT_CHECK && header == "ゲラ")) {
+    if((taskType == TASK_TYPES.layoutCheck && header != "ゲラ") || (taskType != TASK_TYPES.layoutCheck && header == "ゲラ")) {
       return "";
     } 
     content += (header == "ゲラ") ? pageCounter : characterCounter;

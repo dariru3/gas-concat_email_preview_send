@@ -1,8 +1,8 @@
 const ERRORS = {
-  HEADER: "依頼エラー：",
-  NO_TASK: "B欄のタスクを選択してください",
-  NO_COUNT: "字数かページ数を入力してくさい",
-  UNKNOWN_ERR: "不明"
+  header: "依頼エラー：",
+  noTask: "B欄のタスクを選択してください",
+  noCount: "字数かページ数を入力してくさい",
+  unknowError: "不明"
 }
 
 /**
@@ -10,24 +10,24 @@ const ERRORS = {
  */
 function concatEmailSubject() {
   const taskTitle = getTaskTitle();
-  const isTranslateOrAdditionTask = TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION;
-  const isLayoutCheck = TASK_TYPES.LAYOUT_CHECK;
+  const isTranslateOrAdditionTask = TASK_TYPES.translate || TASK_TYPES.addition;
+  const isLayoutCheck = TASK_TYPES.layoutCheck;
 
   const [characterCount, pageCount] = getCharacterPageCount();
 
-  let subjectLine = ERRORS.HEADER;
+  let subjectLine = ERRORS.header;
   let errorMessage = null;
 
   if(taskTitle === undefined || taskTitle === "") {
-    errorMessage = ERRORS.NO_TASK;
+    errorMessage = ERRORS.noTask;
   } else if(isTranslateOrAdditionTask && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
   } else if(isLayoutCheck && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else if(isValidCountError(characterCount, pageCount)) {
-    errorMessage = ERRORS.NO_COUNT;
+    errorMessage = ERRORS.noCount;
   } else {
-    errorMessage = ERRORS.UNKNOWN_ERR;
+    errorMessage = ERRORS.unknowError;
   }
 
   if(errorMessage) {
@@ -40,8 +40,8 @@ function concatEmailSubject() {
 
 function isValidCountError(characterCount, pageCount) {
   return (characterCount == 0 && pageCount == 0) ||
-         ((TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION) && pageCount > 0) ||
-         (TASK_TYPES.LAYOUT_CHECK && characterCount > 0);
+         ((TASK_TYPES.translate || TASK_TYPES.addition) && pageCount > 0) ||
+         (TASK_TYPES.layoutCheck && characterCount > 0);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
@@ -65,15 +65,15 @@ function checkCounterType(taskTitle) {
   let counterType = "";
 
   switch(taskTitle) {
-    case TASK_TYPES.TRANSLATE:
-    case TASK_TYPES.ADDITION:
+    case TASK_TYPES.translate:
+    case TASK_TYPES.addition:
       counterType = characterCounter;
       break;
-    case TASK_TYPES.LAYOUT_CHECK:
+    case TASK_TYPES.layoutCheck:
       counterType = pageCounter;
       break;
     default:
-      counterType = ERRORS.UNKNOWN_ERR;
+      counterType = ERRORS.unknowError;
   }
 
   return counterType

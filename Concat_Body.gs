@@ -9,8 +9,7 @@ function concatEmailBody() {
   const lastRow = SHEET.getLastRow();
   concatEmailSubject();
 
-  const openingGreeting = getDefaultGreeting_().openingGreeting;
-  const closingGreeting = getDefaultGreeting_().closingGreeting;
+  const [openingGreeting, closingGreeting] = getDefaultGreeting_()
   let emailBody = openingGreeting
   // loop through column C and D for email content
   for(let i=START_ROW; i<lastRow; i++){
@@ -24,4 +23,23 @@ function concatEmailBody() {
   emailBody += `\n\n${closingGreeting}`;
 
   SHEET.getRange(BODY.cell).setValue(emailBody);
+}
+
+/**
+ * Helper function to compile default opening and closing greetings.
+ * @returns Opening and closing greetings.
+ */
+function getDefaultGreeting_(){
+  const myName = getNameFromEmailAddress_(MY_EMAIL)
+  let opening = concatNames_().toNames;
+  let ccNames = concatNames_().ccNames;
+  if(ccNames){
+    ccNames = ccNames.slice(0,-1); // remove the final comma
+    opening += `\n(${ccNames})`;
+  }
+  opening += `\n\nお疲れ様です。${myName}です。`;
+
+  const closing = `何卒よろしくお願いいたします。\n\n${myName}`;
+
+  return [opening, closing]
 }

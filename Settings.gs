@@ -17,8 +17,8 @@ const SUBJECT = {
   };
 
 const TASK_TYPES = {
-  TRANSLATE: "翻訳",
-  ADDITION: "追つかせ",
-  LAYOUT_CHECK: "レイアウトチェック"
+  translate: "翻訳",
+  addition: "追つかせ",
+  layoutCheck: "レイアウトチェック"
 }
 // end of global variables
