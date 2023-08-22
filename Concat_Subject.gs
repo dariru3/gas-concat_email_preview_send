@@ -20,12 +20,12 @@ function concatEmailSubject() {
 
   if(taskTitle === undefined || taskTitle === "") {
     errorMessage = ERRORS.noTask;
+  } else if(isValidCountError(characterCount, pageCount, taskTitle)) {
+    errorMessage = ERRORS.noCount;
   } else if(isTranslateOrAdditionTask && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
   } else if(isLayoutCheck && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
-  } else if(isValidCountError(characterCount, pageCount)) {
-    errorMessage = ERRORS.noCount;
   } else {
     errorMessage = ERRORS.unknowError;
   }
@@ -38,10 +38,11 @@ function concatEmailSubject() {
   SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
 }
 
-function isValidCountError(characterCount, pageCount) {
+function isValidCountError(characterCount, pageCount, taskTitle) {
+  console.log(taskTitle)
   return (characterCount == 0 && pageCount == 0) ||
-         ((TASK_TYPES.translate || TASK_TYPES.addition) && pageCount > 0) ||
-         (TASK_TYPES.layoutCheck && characterCount > 0);
+         ((taskTitle == TASK_TYPES.translate || taskTitle == TASK_TYPES.addition) && pageCount > 0) ||
+         (taskTitle == TASK_TYPES.layoutCheck && characterCount > 0);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
@@ -83,7 +84,6 @@ function getTaskTitle() {
   const taskValues = SHEET.getRange('A3:B5').getValues();
   let taskTitle = "";
   for(let i = 0; i < taskValues.length; i++) {
-    console.log(taskValues[i])
     if(taskValues[i][1] == true){
       taskTitle = taskValues[i][0]
     }
