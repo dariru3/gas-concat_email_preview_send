@@ -17,13 +17,15 @@ function concatNames_() {
  * @returns String of names.
  */
 function addSanToNames_(list){
-  let namesPlusSanString = ""
+  let namesPlusSan = ""
   for(let i=0; i<list.length; i++){
     const preferredName = getNameFromEmailAddress_(list[i])
     if(preferredName){
-      namesPlusSanString += `${preferredName}さん、`;
+      namesPlusSan += `${preferredName}さん、`;
+    } else {
+      console.error("Preferred name missing");
     }
   }
   
-  return namesPlusSanString
+  return namesPlusSan
 }
