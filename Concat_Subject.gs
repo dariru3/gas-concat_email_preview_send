@@ -2,7 +2,7 @@ const ERRORS = {
   header: "依頼エラー：",
   noTask: "B欄のタスクを選択してください",
   noCount: "字数かページ数を入力してくさい",
-  unknowError: "不明"
+  unknowError: "エラー不明"
 }
 
 /**
@@ -10,7 +10,7 @@ const ERRORS = {
  */
 function concatEmailSubject() {
   const taskTitle = getTaskTitle();
-  const isTranslateOrAdditionTask = TASK_TYPES.translate || TASK_TYPES.addition;
+  const isTranslateOrAdditionTask = [TASK_TYPES.translate, TASK_TYPES.addition];
   const isLayoutCheck = TASK_TYPES.layoutCheck;
 
   const [characterCount, pageCount] = getCharacterPageCount();
@@ -20,14 +20,14 @@ function concatEmailSubject() {
 
   if(taskTitle === undefined || taskTitle === "") {
     errorMessage = ERRORS.noTask;
-  } else if(isValidCountError(characterCount, pageCount, taskTitle)) {
-    errorMessage = ERRORS.noCount;
-  } else if(isTranslateOrAdditionTask && characterCount > 0) {
+  //} else if(isValidCountError(characterCount, pageCount, taskTitle)) {
+  // errorMessage = ERRORS.noCount;
+  } else if(isTranslateOrAdditionTask.includes(taskTitle) && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
-  } else if(isLayoutCheck && pageCount > 0) {
+  } else if(taskTitle == isLayoutCheck && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
   } else {
-    errorMessage = ERRORS.unknowError;
+    errorMessage = ERRORS.noCount;
   }
 
   if(errorMessage) {
@@ -88,7 +88,7 @@ function getTaskTitle() {
       taskTitle = taskValues[i][0]
     }
   }
-  return `${taskTitle}`
+  return taskTitle
 }
 
 function onEdit(e) {
@@ -106,7 +106,9 @@ function onEdit(e) {
         return row;
       });
       checkboxRange.setValues(values);
-
+    }
+  }
+  /*  
       // Depending on the row that was edited, show or hide rows.
       if (range.getRow() === 5) {
         sheet.showRows(12);
@@ -118,8 +120,9 @@ function onEdit(e) {
       SpreadsheetApp.flush();
     } else {
       sheet.showRows(9, 4)
-    } 
+    }
   } 
+  */
 }
 
 function getCharacterPageCount() {
@@ -129,7 +132,6 @@ function getCharacterPageCount() {
   for(let i = 0; i < charCountValues.length; i++){
     charCount += charCountValues[i][0];
   }
-
   return [charCount, pageCountValue]
 }
 
