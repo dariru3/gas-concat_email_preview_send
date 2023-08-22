@@ -10,6 +10,7 @@ function formatHeader_Content_(header, content){
   const quantityType = new Set(["新規", "既存", "更新", "ゲラ"]);
   const characterCounter = "字";
   const pageCounter = "ページ数";
+  const layoutCheck = "ゲラ";
   const taskType = getTaskTitle();
 
   if(removeContent.has(content)){
@@ -19,10 +20,10 @@ function formatHeader_Content_(header, content){
   if(removeHeader.has(header)){
     return `\n\n${content}`;
   } else if(quantityType.has(header)) {
-    if((taskType == TASK_TYPES.LAYOUT_CHECK && header != "ゲラ") || (taskType != TASK_TYPES.LAYOUT_CHECK && header == "ゲラ")) {
+    if((taskType == TASK_TYPES.layoutCheck && header != layoutCheck) || (taskType != TASK_TYPES.layoutCheck && header == layoutCheck)) {
       return "";
     } 
-    content += (header == "ゲラ") ? pageCounter : characterCounter;
+    content += (header == layoutCheck) ? pageCounter : characterCounter;
     return `\n${header} ${content}`;
   } else if(header instanceof Date){
     return `\n${formatDate_(header)} ${content}`;

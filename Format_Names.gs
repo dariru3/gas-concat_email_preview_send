@@ -4,12 +4,11 @@
  * @returns Either user's name or to and cc names.
  */
 function concatNames_() {
-  const toAddresses = getEmailAddress_().toAddresses;
-  const ccAddresses = getEmailAddress_().ccAddresses;
+  const [toAddresses, ccAddresses] = getEmailAddress_();
   const toNames = addSanToNames_(toAddresses);
   const ccNames = addSanToNames_(ccAddresses);
   
-  return { toNames: toNames,ccNames: ccNames }
+  return [toNames, ccNames]
 }
 
 /**
@@ -18,13 +17,15 @@ function concatNames_() {
  * @returns String of names.
  */
 function addSanToNames_(list){
-  let namesPlusSanString = ""
+  let namesPlusSan = ""
   for(let i=0; i<list.length; i++){
     const preferredName = getNameFromEmailAddress_(list[i])
     if(preferredName){
-      namesPlusSanString += `${preferredName}さん、`;
+      namesPlusSan += `${preferredName}さん、`;
+    } else {
+      console.error("Preferred name missing");
     }
   }
   
-  return namesPlusSanString
+  return namesPlusSan
 }

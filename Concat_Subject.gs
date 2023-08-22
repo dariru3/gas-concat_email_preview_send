@@ -1,8 +1,8 @@
 const ERRORS = {
-  HEADER: "依頼エラー：",
-  NO_TASK: "B欄のタスクを選択してください",
-  NO_COUNT: "字数かページ数を入力してくさい",
-  UNKNOWN_ERR: "不明"
+  header: "依頼エラー：",
+  noTask: "B欄のタスクを選択してください",
+  noCount: "字数かページ数を入力してくさい",
+  unknowError: "エラー不明"
 }
 
 /**
@@ -10,24 +10,24 @@ const ERRORS = {
  */
 function concatEmailSubject() {
   const taskTitle = getTaskTitle();
-  const isTranslateOrAdditionTask = TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION;
-  const isLayoutCheck = TASK_TYPES.LAYOUT_CHECK;
+  const isTranslateOrAdditionTask = [TASK_TYPES.translate, TASK_TYPES.addition];
+  const isLayoutCheck = TASK_TYPES.layoutCheck;
 
   const [characterCount, pageCount] = getCharacterPageCount();
 
-  let subjectLine = ERRORS.HEADER;
+  let subjectLine = ERRORS.header;
   let errorMessage = null;
 
   if(taskTitle === undefined || taskTitle === "") {
-    errorMessage = ERRORS.NO_TASK;
-  } else if(isTranslateOrAdditionTask && characterCount > 0) {
+    errorMessage = ERRORS.noTask;
+  //} else if(isValidCountError(characterCount, pageCount, taskTitle)) {
+  // errorMessage = ERRORS.noCount;
+  } else if(isTranslateOrAdditionTask.includes(taskTitle) && characterCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, characterCount);
-  } else if(isLayoutCheck && pageCount > 0) {
+  } else if(taskTitle == isLayoutCheck && pageCount > 0) {
     subjectLine = updateSubjectLine(taskTitle, pageCount);
-  } else if(isValidCountError(characterCount, pageCount)) {
-    errorMessage = ERRORS.NO_COUNT;
   } else {
-    errorMessage = ERRORS.UNKNOWN_ERR;
+    errorMessage = ERRORS.noCount;
   }
 
   if(errorMessage) {
@@ -38,10 +38,11 @@ function concatEmailSubject() {
   SHEET.getRange(SUBJECT.cell).setValue(subjectLine);
 }
 
-function isValidCountError(characterCount, pageCount) {
+function isValidCountError(characterCount, pageCount, taskTitle) {
+  console.log(taskTitle)
   return (characterCount == 0 && pageCount == 0) ||
-         ((TASK_TYPES.TRANSLATE || TASK_TYPES.ADDITION) && pageCount > 0) ||
-         (TASK_TYPES.LAYOUT_CHECK && characterCount > 0);
+         ((taskTitle == TASK_TYPES.translate || taskTitle == TASK_TYPES.addition) && pageCount > 0) ||
+         (taskTitle == TASK_TYPES.layoutCheck && characterCount > 0);
 }
 
 function updateSubjectLine(taskTitle, characterCount) {
@@ -65,15 +66,15 @@ function checkCounterType(taskTitle) {
   let counterType = "";
 
   switch(taskTitle) {
-    case TASK_TYPES.TRANSLATE:
-    case TASK_TYPES.ADDITION:
+    case TASK_TYPES.translate:
+    case TASK_TYPES.addition:
       counterType = characterCounter;
       break;
-    case TASK_TYPES.LAYOUT_CHECK:
+    case TASK_TYPES.layoutCheck:
       counterType = pageCounter;
       break;
     default:
-      counterType = ERRORS.UNKNOWN_ERR;
+      counterType = ERRORS.unknowError;
   }
 
   return counterType
@@ -83,12 +84,11 @@ function getTaskTitle() {
   const taskValues = SHEET.getRange('A3:B5').getValues();
   let taskTitle = "";
   for(let i = 0; i < taskValues.length; i++) {
-    console.log(taskValues[i])
     if(taskValues[i][1] == true){
       taskTitle = taskValues[i][0]
     }
   }
-  return `${taskTitle}`
+  return taskTitle
 }
 
 function onEdit(e) {
@@ -106,7 +106,9 @@ function onEdit(e) {
         return row;
       });
       checkboxRange.setValues(values);
-
+    }
+  }
+  /*  
       // Depending on the row that was edited, show or hide rows.
       if (range.getRow() === 5) {
         sheet.showRows(12);
@@ -118,8 +120,9 @@ function onEdit(e) {
       SpreadsheetApp.flush();
     } else {
       sheet.showRows(9, 4)
-    } 
+    }
   } 
+  */
 }
 
 function getCharacterPageCount() {
@@ -129,7 +132,6 @@ function getCharacterPageCount() {
   for(let i = 0; i < charCountValues.length; i++){
     charCount += charCountValues[i][0];
   }
-
   return [charCount, pageCountValue]
 }
 

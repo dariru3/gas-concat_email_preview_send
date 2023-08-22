@@ -6,7 +6,7 @@
 function getNameFromEmailAddress_(address, lookupColumn = 'C') {
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("メールリスト");
   const emailNameList = referenceSheet.getRange("A:C").getValues();
-  const noNames = new Set(["edit_all@link-cc.co.jp"]);
+  const noNames = new Set([GROUP_EMAIL.address]);
 
   const nameLookup = {}; // dictionary for easier lookup
   emailNameList.forEach(row => {
@@ -33,15 +33,15 @@ function getNameFromEmailAddress_(address, lookupColumn = 'C') {
  * @returns Array with two lists: to addresses and cc addresses
  */
 function getEmailAddress_(){
-  const EMAIL_ADDRESSES = SHEET.getRange("C3:D7").getValues();
+  const emailAddresses = SHEET.getRange("C3:D7").getValues();
   let toAddresses = [];
   let ccAddresses = [];
-  for(let i=0; i<EMAIL_ADDRESSES.length; i++){
-    toAddresses.push(EMAIL_ADDRESSES[i][0]);
-    ccAddresses.push(EMAIL_ADDRESSES[i][1]);
+  for(let i=0; i<emailAddresses.length; i++){
+    toAddresses.push(emailAddresses[i][0]);
+    ccAddresses.push(emailAddresses[i][1]);
   }
   toAddresses = toAddresses.filter(a => a);
   ccAddresses = ccAddresses.filter(b => b);
 
-  return { toAddresses: toAddresses, ccAddresses: ccAddresses }
+  return [toAddresses, ccAddresses]
 }
