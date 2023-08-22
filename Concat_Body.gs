@@ -9,7 +9,7 @@ function concatEmailBody() {
   const lastRow = SHEET.getLastRow();
   concatEmailSubject();
 
-  const [openingGreeting, closingGreeting] = getDefaultGreeting_()
+  const [openingGreeting, closingGreeting] = getDefaultGreeting_();
   let emailBody = openingGreeting
   // loop through column C and D for email content
   for(let i=START_ROW; i<lastRow; i++){
@@ -31,8 +31,7 @@ function concatEmailBody() {
  */
 function getDefaultGreeting_(){
   const myName = getNameFromEmailAddress_(MY_EMAIL)
-  let opening = concatNames_().toNames;
-  let ccNames = concatNames_().ccNames;
+  let [opening, ccNames] = concatNames_();
   if(ccNames){
     ccNames = ccNames.slice(0,-1); // remove the final comma
     opening += `\n(${ccNames})`;

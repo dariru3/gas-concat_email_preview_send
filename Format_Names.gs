@@ -4,12 +4,11 @@
  * @returns Either user's name or to and cc names.
  */
 function concatNames_() {
-  const toAddresses = getEmailAddress_().toAddresses;
-  const ccAddresses = getEmailAddress_().ccAddresses;
+  const [toAddresses, ccAddresses] = getEmailAddress_();
   const toNames = addSanToNames_(toAddresses);
   const ccNames = addSanToNames_(ccAddresses);
   
-  return { toNames: toNames,ccNames: ccNames }
+  return [toNames, ccNames]
 }
 
 /**

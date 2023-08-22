@@ -6,7 +6,7 @@
 function getNameFromEmailAddress_(address, lookupColumn = 'C') {
   const referenceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("メールリスト");
   const emailNameList = referenceSheet.getRange("A:C").getValues();
-  const noNames = new Set(["edit_all@link-cc.co.jp"]);
+  const noNames = new Set([GROUP_EMAIL.address]);
 
   const nameLookup = {}; // dictionary for easier lookup
   emailNameList.forEach(row => {
@@ -43,5 +43,5 @@ function getEmailAddress_(){
   toAddresses = toAddresses.filter(a => a);
   ccAddresses = ccAddresses.filter(b => b);
 
-  return { toAddresses: toAddresses, ccAddresses: ccAddresses }
+  return [toAddresses, ccAddresses]
 }
