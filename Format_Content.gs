@@ -7,10 +7,10 @@
 function formatHeader_Content_(header, content){
   const removeContent = new Set(["-", "ー"]);
   const removeHeader = new Set(['挨拶（任意）']);
-  const quantityType = new Set(["新規", "既存", "更新", "ゲラ"]);
+  const quantityType = new Set(["新規", "既存", "更新", "ゲラ（P数）"]);
   const characterCounter = "字";
-  const pageCounter = "ページ数";
-  const layoutCheck = "ゲラ";
+  const pageCounter = "ページ";
+  const layoutCheck = "ゲラ（P数）";
   const taskType = getTaskTitle();
 
   if(removeContent.has(content)){
