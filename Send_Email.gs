@@ -9,7 +9,7 @@ function prepareEmail(emailParam){
     return;
   }
 
-  const {toAddresses, ccAddresses} = getEmailAddress_();
+  const [toAddresses, ccAddresses] = getEmailAddress_();
   const options = {
     cc: ccAddresses.join(),
     name: myName
